@@ -9,5 +9,8 @@
     "publish": true,
     "skipChecks": true,
     "timeout": 300
+  },
+  "github": {
+    "release": true
   }
 }
