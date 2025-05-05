@@ -11,6 +11,6 @@
     "timeout": 300
   },
   "github": {
-    "release": true
+    "release": false
   }
 }
