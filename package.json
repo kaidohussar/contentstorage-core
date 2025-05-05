@@ -3,7 +3,7 @@
   "author": "Kaido Hussar <kaidohus@gmail.com>",
   "homepage": "https://contentstorage.app",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Fetch content from contentstorage and generate TypeScript types",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
