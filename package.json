@@ -11,11 +11,6 @@
     "pull-content": "dist/scripts/pull-content.js",
     "generate-types": "dist/scripts/generate-types.js"
   },
-  "exports": {
-    ".": {
-      "import": "./index.js"
-    }
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kaidohussar/contentstorage-core.git"
