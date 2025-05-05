@@ -5,7 +5,7 @@
   "type": "module",
   "version": "0.3.1",
   "description": "Fetch content from contentstorage and generate TypeScript types",
-  "main": "dist/index.js",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
     "pull-content": "dist/scripts/pull-content.js",

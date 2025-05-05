@@ -20,7 +20,6 @@ export function loadConfig(): AppConfig {
     try {
       // Use require for JS config file
       const loadedModule = require(configPath);
-      // Handle different export styles (module.exports = ... or export default ...)
       userConfig = loadedModule.default || loadedModule;
       console.log(`Loaded configuration from ${configPath}`);
     } catch (error) {
