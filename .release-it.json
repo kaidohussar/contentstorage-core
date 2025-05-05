@@ -1,0 +1,13 @@
+{
+  "hooks": {
+    "before:init": [
+      "npm run lint"
+    ],
+    "after:bump": "npm run build"
+  },
+  "npm": {
+    "publish": true,
+    "skipChecks": true,
+    "timeout": 300
+  }
+}
