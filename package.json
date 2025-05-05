@@ -1,7 +1,9 @@
 {
-  "name": "contentstorage-core",
+  "name": "@contentstorage/core",
+  "author": "Kaido Hussar <kaidohus@gmail.com>",
+  "homepage": "https://contentstorage.app",
   "type": "module",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Fetch content from contentstorage and generate TypeScript types",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,13 +11,18 @@
     "pull-content": "dist/scripts/pull-content.js",
     "generate-types": "dist/scripts/generate-types.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kaidohussar/contentstorage-core.git"
+  },
   "scripts": {
     "build": "tsc",
     "prepublishOnly": "npm run build",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
     "prettier:check": "prettier --check \"src/**/*.ts\"",
-    "prettier:write": "prettier --write \"src/**/*.ts\""
+    "prettier:write": "prettier --write \"src/**/*.ts\"",
+    "release": "npx release-it"
   },
   "dependencies": {
     "axios": "^1.7.2",
@@ -30,6 +37,7 @@
     "eslint": "^9.26.0",
     "eslint-config-prettier": "^10.1.2",
     "prettier": "^3.5.3",
+    "release-it": "^19.0.2",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.31.1"
   },
@@ -40,6 +48,8 @@
     "access": "public"
   },
   "files": [
-    "dist/**/*"
+    "dist/**/*",
+    "LICENSE",
+    "README.md"
   ]
 }
