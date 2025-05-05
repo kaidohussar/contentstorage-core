@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "ESNext",
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "strict": true,
+    "target": "ES2020", // Target Node.js version compatibility
+    "module": "CommonJS", // Standard for Node.js tools
+    "outDir": "./dist", // Output directory for compiled JS
+    "rootDir": "./src", // Root directory of source files
+    "strict": true, // Enable all strict type-checking options
     "esModuleInterop": true, // Allows default imports from CommonJS modules
     "skipLibCheck": true, // Skip type checking of declaration files
     "forceConsistentCasingInFileNames": true,

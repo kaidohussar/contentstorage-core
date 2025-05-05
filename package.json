@@ -2,10 +2,10 @@
   "name": "@contentstorage/core",
   "author": "Kaido Hussar <kaidohus@gmail.com>",
   "homepage": "https://contentstorage.app",
-  "type": "module",
+  "type": "commonjs",
   "version": "0.3.2",
   "description": "Fetch content from contentstorage and generate TypeScript types",
-  "module": "dist/index.js",
+  "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
     "pull-content": "dist/scripts/pull-content.js",
