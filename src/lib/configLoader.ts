@@ -13,14 +13,13 @@ const DEFAULT_CONFIG: Partial<AppConfig> = {
 };
 
 export function loadConfig(): AppConfig {
-  const configPath = path.resolve(process.cwd(), 'content.config.ts'); // Look in user's current working dir
+  const configPath = path.resolve(process.cwd(), 'contentstorage.config.ts'); // Look in user's current working dir
   let userConfig: Partial<AppConfig> = {};
 
   if (fs.existsSync(configPath)) {
     try {
       // Use require for JS config file
       const loadedModule = require(configPath);
-      // Handle different export styles (module.exports = ... or export default ...)
       userConfig = loadedModule.default || loadedModule;
       console.log(`Loaded configuration from ${configPath}`);
     } catch (error) {

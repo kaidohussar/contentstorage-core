@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 import axios from 'axios';
-import fs from 'fs/promises'; // Use promises API for async/await
+import fs from 'fs/promises';
 import path from 'path';
-import chalk from 'chalk'; // Optional: for colored output
+import chalk from 'chalk';
 import { loadConfig } from '../lib/configLoader';
 
 export async function pullContent() {
