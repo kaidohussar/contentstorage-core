@@ -13,7 +13,7 @@ const DEFAULT_CONFIG: Partial<AppConfig> = {
 };
 
 export function loadConfig(): AppConfig {
-  const configPath = path.resolve(process.cwd(), 'content.config.js'); // Look in user's current working dir
+  const configPath = path.resolve(process.cwd(), 'content.config.ts'); // Look in user's current working dir
   let userConfig: Partial<AppConfig> = {};
 
   if (fs.existsSync(configPath)) {

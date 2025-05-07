@@ -93,3 +93,5 @@ export async function generateTypes() {
     process.exit(1); // Exit with error code
   }
 }
+
+generateTypes();
