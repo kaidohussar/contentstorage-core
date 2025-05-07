@@ -5,7 +5,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import jsonToTS from 'json-to-ts'; // Import the library
 import chalk from 'chalk'; // Optional: for colored output
-import { loadConfig } from '../lib/configLoader';
+import { loadConfig } from '../lib/configLoader.js';
 
 export async function generateTypes() {
   console.log(chalk.blue('Starting type generation...'));
@@ -63,7 +63,7 @@ export async function generateTypes() {
     // jsonToTS returns an array of strings, each being a line of the interface/type
     // We need to give the root type a name.
     const rootTypeName = 'RootContentItem'; // Or derive from filename, or make configurable
-    const typeDeclarations: string[] = jsonToTS(jsonObject, {
+    const typeDeclarations: string[] = jsonToTS.default(jsonObject, {
       rootName: rootTypeName,
     });
 

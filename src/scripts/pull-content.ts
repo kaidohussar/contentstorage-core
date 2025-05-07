@@ -4,7 +4,7 @@ import axios from 'axios';
 import fs from 'fs/promises';
 import path from 'path';
 import chalk from 'chalk';
-import { loadConfig } from '../lib/configLoader';
+import { loadConfig } from '../lib/configLoader.js';
 
 export async function pullContent() {
   console.log(chalk.blue('Starting content pull...'));

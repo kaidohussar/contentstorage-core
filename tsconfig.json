@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
     "target": "ES2020", // Target Node.js version compatibility
-    "module": "CommonJS", // Standard for Node.js tools
+    "module": "NodeNext", // Standard for Node.js tools
+    "moduleResolution": "NodeNext",
     "outDir": "./dist", // Output directory for compiled JS
     "rootDir": "./src", // Root directory of source files
     "strict": true, // Enable all strict type-checking options
     "esModuleInterop": true, // Allows default imports from CommonJS modules
+    "allowImportingTsExtensions": false,
     "skipLibCheck": true, // Skip type checking of declaration files
     "forceConsistentCasingInFileNames": true,
     "declaration": true, // Generate corresponding '.d.ts' files

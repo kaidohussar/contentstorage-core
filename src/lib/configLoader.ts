@@ -21,6 +21,7 @@ export function loadConfig(): AppConfig {
       // Use require for JS config file
       const loadedModule = require(configPath);
       userConfig = loadedModule.default || loadedModule;
+      console.log('Loaded config', JSON.stringify(userConfig));
       console.log(`Loaded configuration from ${configPath}`);
     } catch (error) {
       console.error(`Error loading configuration from ${configPath}:`, error);
