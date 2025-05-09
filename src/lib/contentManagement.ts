@@ -1,50 +1,30 @@
-import { AppConfig, ContentStructure, DotNotationPaths } from '../types.js';
+import { ContentStructure, DotNotationPaths } from '../types.js';
 
 import fs from 'fs/promises';
 import path from 'path';
-import { loadConfig } from './configLoader.js';
 
 let activeContent: ContentStructure | null = null;
 let activeLanguage: string | null = null;
-let loadedAppConfig: AppConfig | null = null; // Cache for the loaded config
-
-/**
- * Ensures the application configuration (especially contentDir) is loaded.
- * Calls your library's loadConfig function.
- */
-async function ensureConfigInitialized(): Promise<AppConfig> {
-  if (loadedAppConfig) {
-    return loadedAppConfig;
-  }
-  try {
-    const config = await loadConfig(); // This is your library's function
-    if (!config || !config.contentDir) {
-      throw new Error(
-        'contentDir not found in the loaded configuration (contentstorage.config.js).'
-      );
-    }
-    loadedAppConfig = config as AppConfig; // Ensure it matches the expected structure
-    console.log(
-      `[LocalizationLibrary] Configuration loaded. Content directory set to: ${loadedAppConfig.contentDir}`
-    );
-    return loadedAppConfig;
-  } catch (error) {
-    console.error(
-      '[Contentstorage] Failed to initialize configuration:',
-      error
-    );
-    throw new Error(
-      `[Contentstorage] Critical error: Could not load or validate app configuration. ${(error as Error).message}`
-    );
-  }
-}
 
 /**
  * Loads and sets the content for a specific language.
  * It will internally ensure the application configuration (for contentDir) is loaded.
  * @param languageCode The language code (e.g., 'EN', 'FR') for the JSON file to load.
  */
-export async function setContentLanguage(languageCode: string): Promise<void> {
+export async function setContentLanguage(
+  contentDir: string,
+  languageCode: string
+): Promise<void> {
+  if (
+    !contentDir ||
+    typeof contentDir !== 'string' ||
+    contentDir.trim() === ''
+  ) {
+    throw new Error(
+      '[Contentstorage] Invalid contentUrl provided to setContentLanguage.'
+    );
+  }
+
   if (
     !languageCode ||
     typeof languageCode !== 'string' ||
@@ -55,10 +35,8 @@ export async function setContentLanguage(languageCode: string): Promise<void> {
     );
   }
 
-  const config = await ensureConfigInitialized(); // Gets contentDir from loaded config
-
   const targetFilename = `${languageCode}.json`;
-  const jsonFilePath = path.join(config.contentDir, targetFilename);
+  const jsonFilePath = path.join(contentDir, targetFilename);
 
   console.log(
     `[Contentstorage] Attempting to load content for language '${languageCode}' from ${jsonFilePath}...`
