@@ -13,7 +13,7 @@ const DEFAULT_CONFIG: Partial<AppConfig> = {
 };
 
 export async function loadConfig(): Promise<AppConfig> {
-  const configPath = path.resolve(process.cwd(), 'contentstorage.config.ts'); // Look in user's current working dir
+  const configPath = path.resolve(process.cwd(), 'contentstorage.config.js'); // Look in user's current working dir
   let userConfig: Partial<AppConfig> = {};
 
   if (fs.existsSync(configPath)) {
