@@ -32,54 +32,58 @@ export async function pullContent() {
     // await fs.writeFile(outputPath, JSON.stringify(jsonData, null, 2));
     // console.log(chalk.green(`Content saved successfully to ${outputPath}`));
 
-    // Option 2: Assume the response is an ARRAY of objects, save each as a separate file
-    // This matches the requirement "use the first file from the directory" later
-    if (!Array.isArray(jsonData)) {
-      throw new Error(
-        `Expected an array of objects from ${config.contentUrl}, but received type ${typeof jsonData}. Cannot save individual files.`
+    // Check if jsonData is a single, non-null object (and not an array)
+    if (typeof jsonData !== 'object' || Array.isArray(jsonData)) {
+      console.log(
+        chalk.red(
+          `Expected a single JSON object from ${config.contentUrl}, but received type ${
+            Array.isArray(jsonData) ? 'array' : typeof jsonData
+          }. Cannot save the file.`
+        )
       );
-    }
-
-    if (jsonData.length === 0) {
-      console.log(chalk.yellow('Received empty array. No files to save.'));
       return;
     }
 
     console.log(
-      chalk.gray(`Received ${jsonData.length} items. Saving individually...`)
+      chalk.green(`Received JSON. Saving it to ${config.contentDir}`)
     );
 
-    let filesSavedCount = 0;
-    for (let i = 0; i < jsonData.length; i++) {
-      const item = jsonData[i];
-      // Determine filename: use 'id' or 'slug' if available, otherwise use index
-      const filename = `${item.id || item.slug || i}.json`;
-      const outputPath = path.join(config.contentDir, filename);
+    // Determine filename for the single object.
+    // Use 'id' or 'slug' from the object if available, otherwise use 'data' as a fallback base name.
+    const objectData = jsonData as any; // Use type assertion to access potential properties
+    const baseFilename = objectData.id || objectData.slug || 'data';
+    const filename = `${baseFilename}.json`;
+    const outputPath = path.join(config.contentDir, filename);
 
-      try {
-        await fs.writeFile(outputPath, JSON.stringify(item, null, 2));
-        filesSavedCount++;
-      } catch (writeError: any) {
-        console.error(
-          chalk.red(`Error saving file ${filename}:`),
-          writeError.message
-        );
-        // Optionally decide whether to continue or stop on error
-      }
-    }
     console.log(
-      chalk.green(
-        `Successfully saved ${filesSavedCount} files to ${config.contentDir}`
+      chalk.gray(
+        `Received a single JSON object. Attempting to save as ${filename}...`
       )
     );
-  } catch (error: any) {
-    console.error(chalk.red('Error fetching or saving content:'));
-    if (axios.isAxiosError(error)) {
-      console.error(chalk.red(`Status: ${error.response?.status}`));
-      console.error(chalk.red(`Data: ${JSON.stringify(error.response?.data)}`));
-    } else {
-      console.error(chalk.red(error.message));
+
+    try {
+      // Ensure the output directory exists
+      await fs.mkdir(config.contentDir, { recursive: true });
+
+      // Write the single JSON object to the file
+      await fs.writeFile(outputPath, JSON.stringify(jsonData, null, 2));
+      console.log(
+        chalk.green(`Successfully saved the object to ${outputPath}`)
+      );
+    } catch (error: any) {
+      console.error(chalk.red('Error fetching or saving content:'));
+      if (axios.isAxiosError(error)) {
+        console.error(chalk.red(`Status: ${error.response?.status}`));
+        console.error(
+          chalk.red(`Data: ${JSON.stringify(error.response?.data)}`)
+        );
+      } else {
+        console.error(chalk.red(error.message));
+      }
+      process.exit(1); // Exit with error code
     }
+  } catch (error: any) {
+    console.error(chalk.red(error.message));
     process.exit(1); // Exit with error code
   }
 }
