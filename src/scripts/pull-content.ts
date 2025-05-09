@@ -85,8 +85,6 @@ export async function pullContent() {
           )
         );
 
-        // flatten json
-
         // Write the JSON data to the file
         await fs.writeFile(outputPath, JSON.stringify(jsonData, null, 2));
         console.log(chalk.green(`Successfully saved ${outputPath}`));
