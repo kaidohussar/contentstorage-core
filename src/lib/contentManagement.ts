@@ -1,4 +1,4 @@
-import { ContentStructure, DotNotationPaths } from '../types.js';
+import { ContentStructure } from '../types.js';
 
 let activeContent: ContentStructure | null = null;
 
@@ -36,32 +36,38 @@ export function setContentLanguage(contentJson: ContentStructure | null) {
  * @returns The text string from the JSON, or the fallbackValue, or undefined.
  */
 export function getText(
-  pathString: DotNotationPaths,
+  // The pathString is now a direct key of your (flattened) content structure.
+  // TypeScript will provide autocompletion for these keys.
+  pathString: keyof ContentStructure,
   fallbackValue?: string
 ): string | undefined {
   if (!activeContent) {
-    const msg = `[Contentstorage] getText: Content not loaded (Path: "${String(pathString)}"). Ensure setContentLanguage() was called and completed successfully.`;
+    const msg = `[Contentstorage] getText: Content not loaded (Key: "${String(pathString)}"). Ensure setContentLanguage() was called and completed successfully.`;
     console.warn(msg);
     return fallbackValue;
   }
 
-  const keys = (pathString as string).split('.');
-  let current: any = activeContent;
+  // Direct lookup since activeContent is expected to be flat and pathString is a key.
+  // We use Object.prototype.hasOwnProperty.call for safer property checking.
+  if (Object.prototype.hasOwnProperty.call(activeContent, pathString)) {
+    // Since pathString is `keyof CustomContentStructure`, activeContent[pathString] is type-safe.
+    // However, CustomContentStructure is initially `[key: string]: any` in the library,
+    // so we might need a cast here if strict typing is desired for `value`.
+    // But the consumer's augmentation makes CustomContentStructure specific.
+    const value = activeContent[pathString as string]; // Using `as string` because keys are strings with dots.
 
-  for (const key of keys) {
-    if (current && typeof current === 'object' && key in current) {
-      current = current[key];
+    if (typeof value === 'string') {
+      return value;
     } else {
-      const msg = `[Contentstorage] getText: Path "${String(pathString)}" not found in loaded content.`;
+      const msg = `[Contentstorage] getText: Value at key "${String(pathString)}" is not a string (actual type: ${typeof value}).'}'.`;
       console.warn(msg);
       return fallbackValue;
     }
-  }
-
-  if (typeof current === 'string') {
-    return current;
   } else {
-    const msg = `[Contentstorage] getText: Value at path "${String(pathString)}" is not a string (actual type: ${typeof current}).`;
+    // This case should ideally be caught by TypeScript if pathString is truly `keyof CustomContentStructure`
+    // and the key doesn't exist, unless `activeContent` is out of sync with the types.
+    // However, it's good for runtime robustness.
+    const msg = `[Contentstorage] getText: Key "${String(pathString)}" not found in loaded content'.`;
     console.warn(msg);
     return fallbackValue;
   }
