@@ -30,11 +30,11 @@ async function ensureConfigInitialized(): Promise<AppConfig> {
     return loadedAppConfig;
   } catch (error) {
     console.error(
-      '[LocalizationLibrary] Failed to initialize configuration:',
+      '[Contentstorage] Failed to initialize configuration:',
       error
     );
     throw new Error(
-      `[LocalizationLibrary] Critical error: Could not load or validate app configuration. ${(error as Error).message}`
+      `[Contentstorage] Critical error: Could not load or validate app configuration. ${(error as Error).message}`
     );
   }
 }
@@ -51,7 +51,7 @@ export async function setContentLanguage(languageCode: string): Promise<void> {
     languageCode.trim() === ''
   ) {
     throw new Error(
-      '[LocalizationLibrary] Invalid language code provided to setContentLanguage.'
+      '[Contentstorage] Invalid language code provided to setContentLanguage.'
     );
   }
 
@@ -61,7 +61,7 @@ export async function setContentLanguage(languageCode: string): Promise<void> {
   const jsonFilePath = path.join(config.contentDir, targetFilename);
 
   console.log(
-    `[LocalizationLibrary] Attempting to load content for language '${languageCode}' from ${jsonFilePath}...`
+    `[Contentstorage] Attempting to load content for language '${languageCode}' from ${jsonFilePath}...`
   );
 
   try {
@@ -69,15 +69,15 @@ export async function setContentLanguage(languageCode: string): Promise<void> {
     activeContent = JSON.parse(jsonContentString) as ContentStructure; // Relies on augmentation
     activeLanguage = languageCode;
     console.log(
-      `[LocalizationLibrary] Content for language '${languageCode}' loaded successfully.`
+      `[Contentstorage] Content for language '${languageCode}' loaded successfully.`
     );
   } catch (error) {
     activeContent = null; // Reset on failure
     console.error(
-      `[LocalizationLibrary] Failed to load content for language '${languageCode}' from ${jsonFilePath}. Error: ${(error as Error).message}`
+      `[Contentstorage] Failed to load content for language '${languageCode}' from ${jsonFilePath}. Error: ${(error as Error).message}`
     );
     throw new Error(
-      `[LocalizationLibrary] Could not load content for language: ${languageCode}. Ensure file exists at '${jsonFilePath}' and is valid JSON.`
+      `[Contentstorage] Could not load content for language: ${languageCode}. Ensure file exists at '${jsonFilePath}' and is valid JSON.`
     );
   }
 }
@@ -98,7 +98,7 @@ export function getText(
   fallbackValue?: string
 ): string | undefined {
   if (!activeContent) {
-    const msg = `[LocalizationLibrary] getText: Content not loaded (Path: "${String(pathString)}"). Ensure setContentLanguage() was called and completed successfully.`;
+    const msg = `[Contentstorage] getText: Content not loaded (Path: "${String(pathString)}"). Ensure setContentLanguage() was called and completed successfully.`;
     console.warn(msg);
     return fallbackValue;
   }
@@ -110,7 +110,7 @@ export function getText(
     if (current && typeof current === 'object' && key in current) {
       current = current[key];
     } else {
-      const msg = `[LocalizationLibrary] getText: Path "${String(pathString)}" not found in loaded content for language '${activeLanguage}'.`;
+      const msg = `[Contentstorage] getText: Path "${String(pathString)}" not found in loaded content for language '${activeLanguage}'.`;
       console.warn(msg);
       return fallbackValue;
     }
@@ -119,7 +119,7 @@ export function getText(
   if (typeof current === 'string') {
     return current;
   } else {
-    const msg = `[LocalizationLibrary] getText: Value at path "${String(pathString)}" is not a string (actual type: ${typeof current}).`;
+    const msg = `[Contentstorage] getText: Value at path "${String(pathString)}" is not a string (actual type: ${typeof current}).`;
     console.warn(msg);
     return fallbackValue;
   }
