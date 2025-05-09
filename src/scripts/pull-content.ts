@@ -105,7 +105,7 @@ export async function pullContent() {
     }
 
     console.log(chalk.green('\nAll content successfully pulled and saved.'));
-  } catch (error: any) {
+  } catch {
     // Outer catch for setup errors (like loadConfig) or re-thrown errors from the loop
     // The specific error details for a file operation would have been logged by the inner catch.
     // This block provides a general failure message and ensures the process exits with an error code.
