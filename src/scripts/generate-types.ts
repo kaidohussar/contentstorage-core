@@ -68,7 +68,7 @@ export async function generateTypes() {
 
     // Generate TypeScript interfaces using json-to-ts
     // The root type name for the generated interface. You might want to make this configurable.
-    const rootTypeName = 'RootContentItem';
+    const rootTypeName = 'ContentRoot';
     const typeDeclarations: string[] = jsonToTS.default(jsonObject, {
       rootName: rootTypeName,
     });
