@@ -1,13 +1,9 @@
 import path from 'path';
 import fs from 'fs';
-
-export interface AppConfig {
-  contentUrl: string;
-  contentDir: string;
-  typesOutputFile: string;
-}
+import { AppConfig } from '../types.js';
 
 const DEFAULT_CONFIG: Partial<AppConfig> = {
+  languageCodes: [],
   contentDir: path.join('src', 'assets', 'content'),
   typesOutputFile: path.join('src', 'generated', 'content-types.ts'),
 };
@@ -49,6 +45,7 @@ export async function loadConfig(): Promise<AppConfig> {
 
   // Resolve paths relative to the user's project root (process.cwd())
   const finalConfig: AppConfig = {
+    languageCodes: mergedConfig.languageCodes || [],
     contentUrl: mergedConfig.contentUrl,
     contentDir: path.resolve(process.cwd(), mergedConfig.contentDir!),
     typesOutputFile: path.resolve(process.cwd(), mergedConfig.typesOutputFile!),

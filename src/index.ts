@@ -1,3 +1,3 @@
-import { AppConfig } from './lib/configLoader.js';
+import { AppConfig, LanguageCode } from './types.js';
 
-export { AppConfig };
+export { AppConfig, LanguageCode };
