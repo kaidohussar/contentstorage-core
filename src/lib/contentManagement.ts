@@ -64,9 +64,6 @@ export function getText(
       return fallbackValue;
     }
   } else {
-    // This case should ideally be caught by TypeScript if pathString is truly `keyof CustomContentStructure`
-    // and the key doesn't exist, unless `activeContent` is out of sync with the types.
-    // However, it's good for runtime robustness.
     const msg = `[Contentstorage] getText: Key "${String(pathString)}" not found in loaded content'.`;
     console.warn(msg);
     return fallbackValue;
