@@ -55,8 +55,7 @@ export type LanguageCode =
  * }
  */
 export interface ContentStructure {
-  // This acts as a placeholder. For the library's own compilation,
-  // it can be a very generic type like `[key: string]: any;` or empty.
-  // The consumer's augmentation will provide the actual structure.
-  [key: string]: any;
+  // Intentionally empty, or with only truly optional, non-conflicting base properties.
+  // Avoid index signatures like [key: string]: any; if you want augmentation
+  // to strictly define the keys for `keyof` purposes.
 }
