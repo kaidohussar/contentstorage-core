@@ -7,9 +7,7 @@ let activeContent: ContentStructure | null = null;
  * It will internally ensure the application configuration (for contentDir) is loaded.
  * @param languageCode The language code (e.g., 'EN', 'FR') for the JSON file to load.
  */
-export async function setContentLanguage(
-  contentJson: ContentStructure | null
-): Promise<void> {
+export function setContentLanguage(contentJson: ContentStructure | null) {
   if (!contentJson || typeof contentJson !== 'object') {
     throw new Error(
       '[Contentstorage] Invalid contentUrl provided to setContentLanguage.'
@@ -38,7 +36,6 @@ export async function setContentLanguage(
  * @returns The text string from the JSON, or the fallbackValue, or undefined.
  */
 export function getText(
-  // @ts-expect-error Is fine
   pathString: DotNotationPaths,
   fallbackValue?: string
 ): string | undefined {
