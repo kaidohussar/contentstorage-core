@@ -102,7 +102,7 @@ export async function pullContent() {
         // which will then call process.exit(1), maintaining original exit behavior on error.
         throw error;
       }
-    } // End of for...of loop
+    }
 
     console.log(chalk.green('\nAll content successfully pulled and saved.'));
   } catch (error: any) {
