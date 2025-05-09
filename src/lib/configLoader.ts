@@ -4,8 +4,8 @@ import { AppConfig } from '../types.js';
 
 const DEFAULT_CONFIG: Partial<AppConfig> = {
   languageCodes: [],
-  contentDir: path.join('src', 'assets', 'content'),
-  typesOutputFile: path.join('src', 'generated', 'content-types.ts'),
+  contentDir: path.join('src', 'content', 'json'),
+  typesOutputFile: path.join('src', 'content', 'content-types.ts'),
 };
 
 export async function loadConfig(): Promise<AppConfig> {

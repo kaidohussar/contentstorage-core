@@ -1,3 +1,5 @@
 import { AppConfig, LanguageCode } from './types.js';
+import { defineConfig } from './helpers/defineConfig.js';
 
-export { AppConfig, LanguageCode };
+export type { AppConfig, LanguageCode };
+export { defineConfig };
