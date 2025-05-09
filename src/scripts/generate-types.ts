@@ -10,7 +10,7 @@ import { loadConfig } from '../lib/configLoader.js';
 export async function generateTypes() {
   console.log(chalk.blue('Starting type generation...'));
 
-  const config = loadConfig();
+  const config = await loadConfig();
 
   console.log(chalk.gray(`Reading JSON files from: ${config.contentDir}`));
   console.log(

@@ -9,7 +9,7 @@ import { loadConfig } from '../lib/configLoader.js';
 export async function pullContent() {
   console.log(chalk.blue('Starting content pull...'));
 
-  const config = loadConfig();
+  const config = await loadConfig();
 
   console.log(chalk.gray(`Getting content from: ${config.contentUrl}`));
   console.log(chalk.gray(`Saving content to: ${config.contentDir}`));

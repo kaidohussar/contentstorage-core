@@ -12,14 +12,14 @@ const DEFAULT_CONFIG: Partial<AppConfig> = {
   typesOutputFile: path.join('src', 'generated', 'content-types.ts'),
 };
 
-export function loadConfig(): AppConfig {
+export async function loadConfig(): Promise<AppConfig> {
   const configPath = path.resolve(process.cwd(), 'contentstorage.config.ts'); // Look in user's current working dir
   let userConfig: Partial<AppConfig> = {};
 
   if (fs.existsSync(configPath)) {
     try {
       // Use require for JS config file
-      const loadedModule = require(configPath);
+      const loadedModule = await import(configPath);
       userConfig = loadedModule.default || loadedModule;
       console.log('Loaded config', JSON.stringify(userConfig));
       console.log(`Loaded configuration from ${configPath}`);
