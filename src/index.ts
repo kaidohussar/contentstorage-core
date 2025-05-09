@@ -1,6 +1,6 @@
-import { AppConfig, LanguageCode } from './types.js';
+import { AppConfig, LanguageCode, ContentStructure } from './types.js';
 
 import { setContentLanguage, getText } from './lib/contentManagement.js';
 
-export { AppConfig, LanguageCode };
+export { AppConfig, LanguageCode, ContentStructure };
 export { setContentLanguage, getText };
