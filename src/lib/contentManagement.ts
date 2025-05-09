@@ -1,10 +1,6 @@
 import { ContentStructure, DotNotationPaths } from '../types.js';
 
-import fs from 'fs/promises';
-import path from 'path';
-
 let activeContent: ContentStructure | null = null;
-let activeLanguage: string | null = null;
 
 /**
  * Loads and sets the content for a specific language.
@@ -12,50 +8,21 @@ let activeLanguage: string | null = null;
  * @param languageCode The language code (e.g., 'EN', 'FR') for the JSON file to load.
  */
 export async function setContentLanguage(
-  contentDir: string,
-  languageCode: string
+  contentJson: ContentStructure | null
 ): Promise<void> {
-  if (
-    !contentDir ||
-    typeof contentDir !== 'string' ||
-    contentDir.trim() === ''
-  ) {
+  if (!contentJson || typeof contentJson !== 'object') {
     throw new Error(
       '[Contentstorage] Invalid contentUrl provided to setContentLanguage.'
     );
   }
 
-  if (
-    !languageCode ||
-    typeof languageCode !== 'string' ||
-    languageCode.trim() === ''
-  ) {
-    throw new Error(
-      '[Contentstorage] Invalid language code provided to setContentLanguage.'
-    );
-  }
-
-  const targetFilename = `${languageCode}.json`;
-  const jsonFilePath = path.join(contentDir, targetFilename);
-
-  console.log(
-    `[Contentstorage] Attempting to load content for language '${languageCode}' from ${jsonFilePath}...`
-  );
-
   try {
-    const jsonContentString = await fs.readFile(jsonFilePath, 'utf-8');
-    activeContent = JSON.parse(jsonContentString) as ContentStructure; // Relies on augmentation
-    activeLanguage = languageCode;
-    console.log(
-      `[Contentstorage] Content for language '${languageCode}' loaded successfully.`
-    );
+    activeContent = contentJson as ContentStructure; // Relies on augmentation
+    console.log(`[Contentstorage] Content loaded.`);
   } catch (error) {
     activeContent = null; // Reset on failure
     console.error(
-      `[Contentstorage] Failed to load content for language '${languageCode}' from ${jsonFilePath}. Error: ${(error as Error).message}`
-    );
-    throw new Error(
-      `[Contentstorage] Could not load content for language: ${languageCode}. Ensure file exists at '${jsonFilePath}' and is valid JSON.`
+      `[Contentstorage] Failed to load content. Error: ${(error as Error).message}`
     );
   }
 }
@@ -88,7 +55,7 @@ export function getText(
     if (current && typeof current === 'object' && key in current) {
       current = current[key];
     } else {
-      const msg = `[Contentstorage] getText: Path "${String(pathString)}" not found in loaded content for language '${activeLanguage}'.`;
+      const msg = `[Contentstorage] getText: Path "${String(pathString)}" not found in loaded content.`;
       console.warn(msg);
       return fallbackValue;
     }
@@ -101,12 +68,4 @@ export function getText(
     console.warn(msg);
     return fallbackValue;
   }
-}
-
-/**
- * Gets the currently active language code.
- * @returns The active language code or null if no language is set.
- */
-export function getCurrentLanguage(): string | null {
-  return activeLanguage;
 }
