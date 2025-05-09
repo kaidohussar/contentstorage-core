@@ -54,7 +54,7 @@ export function getText(
     // However, CustomContentStructure is initially `[key: string]: any` in the library,
     // so we might need a cast here if strict typing is desired for `value`.
     // But the consumer's augmentation makes CustomContentStructure specific.
-    const value = activeContent[pathString as string]; // Using `as string` because keys are strings with dots.
+    const value = (activeContent as any)[pathString as string]; // Using `as string` because keys are strings with dots.
 
     if (typeof value === 'string') {
       return value;
