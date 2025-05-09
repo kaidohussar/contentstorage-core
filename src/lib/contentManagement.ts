@@ -1,13 +1,13 @@
 import { ContentStructure } from '../types.js';
 
-let activeContent: ContentStructure | null = null;
+let activeContent: object | null = null;
 
 /**
  * Loads and sets the content for a specific language.
  * It will internally ensure the application configuration (for contentDir) is loaded.
  * @param languageCode The language code (e.g., 'EN', 'FR') for the JSON file to load.
  */
-export function setContentLanguage(contentJson: ContentStructure | null) {
+export function setContentLanguage(contentJson: object) {
   if (!contentJson || typeof contentJson !== 'object') {
     throw new Error(
       '[Contentstorage] Invalid contentUrl provided to setContentLanguage.'
@@ -15,7 +15,7 @@ export function setContentLanguage(contentJson: ContentStructure | null) {
   }
 
   try {
-    activeContent = contentJson as ContentStructure; // Relies on augmentation
+    activeContent = contentJson; // Relies on augmentation
     console.log(`[Contentstorage] Content loaded.`);
   } catch (error) {
     activeContent = null; // Reset on failure
