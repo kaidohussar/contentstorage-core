@@ -10,44 +10,51 @@ import { loadConfig } from '../lib/configLoader.js';
 export async function generateTypes() {
   console.log(chalk.blue('Starting type generation...'));
 
-  const config = await loadConfig();
+  const config = await loadConfig(); // Ensure loadConfig provides languageCodes
 
-  console.log(chalk.gray(`Reading JSON files from: ${config.contentDir}`));
+  console.log(
+    chalk.gray(`Content will be read from directory: ${config.contentDir}`)
+  );
   console.log(
     chalk.gray(`Saving TypeScript types to: ${config.typesOutputFile}`)
   );
 
   try {
-    // Read the content directory
-    let files: string[];
+    // Validate languageCodes from config
+    if (
+      !config.languageCodes ||
+      !Array.isArray(config.languageCodes) ||
+      config.languageCodes.length === 0
+    ) {
+      throw new Error(
+        'config.languageCodes is missing, not an array, or empty. Cannot determine which JSON file to use for type generation.'
+      );
+    }
+
+    const firstLanguageCode = config.languageCodes[0];
+    const targetFilename = `${firstLanguageCode}.json`;
+    const jsonFilePath = path.join(config.contentDir, targetFilename);
+
+    console.log(
+      chalk.gray(
+        `Attempting to generate types using the JSON file for the first configured language code ('${firstLanguageCode}').`
+      )
+    );
+    console.log(chalk.gray(`Target file: ${jsonFilePath}`));
+
+    // Read the specific JSON file
+    let jsonContent;
     try {
-      files = await fs.readdir(config.contentDir);
+      jsonContent = await fs.readFile(jsonFilePath, 'utf-8');
     } catch (err: any) {
       if (err.code === 'ENOENT') {
         throw new Error(
-          `Content directory not found: ${config.contentDir}. Run 'pull-content' first?`
+          `Target JSON file not found: ${jsonFilePath}. Ensure content for language code '${firstLanguageCode}' has been pulled and exists at this location.`
         );
       }
-      throw err; // Re-throw other errors
+      // Re-throw other fs.readFile errors (e.g., permission issues)
+      throw new Error(`Failed to read file ${jsonFilePath}: ${err.message}`);
     }
-
-    // Filter for JSON files and sort them (optional, but good for consistency)
-    const jsonFiles = files
-      .filter((file) => file.toLowerCase().endsWith('.json'))
-      .sort();
-
-    if (jsonFiles.length === 0) {
-      throw new Error(`No JSON files found in ${config.contentDir}.`);
-    }
-
-    const firstJsonFile = jsonFiles[0];
-    const jsonFilePath = path.join(config.contentDir, firstJsonFile);
-    console.log(
-      chalk.gray(`Using first JSON file for type generation: ${firstJsonFile}`)
-    );
-
-    // Read the first JSON file
-    const jsonContent = await fs.readFile(jsonFilePath, 'utf-8');
 
     // Parse the JSON content
     let jsonObject;
@@ -55,25 +62,29 @@ export async function generateTypes() {
       jsonObject = JSON.parse(jsonContent);
     } catch (parseError: any) {
       throw new Error(
-        `Failed to parse JSON file ${firstJsonFile}: ${parseError.message}`
+        `Failed to parse JSON from file ${targetFilename}: ${parseError.message}`
       );
     }
 
     // Generate TypeScript interfaces using json-to-ts
-    // jsonToTS returns an array of strings, each being a line of the interface/type
-    // We need to give the root type a name.
-    const rootTypeName = 'RootContentItem'; // Or derive from filename, or make configurable
+    // The root type name for the generated interface. You might want to make this configurable.
+    const rootTypeName = 'RootContentItem';
     const typeDeclarations: string[] = jsonToTS.default(jsonObject, {
       rootName: rootTypeName,
     });
+    // If your previous code `jsonToTS.default(...)` was correct for your setup,
+    // please revert the line above to:
+    // const typeDeclarations: string[] = jsonToTS.default(jsonObject, {
+    //   rootName: rootTypeName,
+    // });
 
     if (!typeDeclarations || typeDeclarations.length === 0) {
       throw new Error(
-        `Could not generate types from ${firstJsonFile}. Is the file empty or malformed?`
+        `Could not generate types from ${targetFilename}. The file might be empty, malformed, or not produce any types.`
       );
     }
 
-    const outputContent = typeDeclarations.join('\n\n'); // Add extra newline between interfaces
+    const outputContent = typeDeclarations.join('\n\n'); // Add extra newline between interfaces for readability
 
     // Ensure the output directory exists
     const outputDir = path.dirname(config.typesOutputFile);
@@ -88,8 +99,12 @@ export async function generateTypes() {
       )
     );
   } catch (error: any) {
-    console.error(chalk.red('Error generating TypeScript types:'));
+    console.error(chalk.red.bold('\nError generating TypeScript types:'));
     console.error(chalk.red(error.message));
+    // It's good practice to log the stack for unexpected errors if not already done by a higher-level handler
+    // if (error.stack) {
+    //   console.error(chalk.gray(error.stack));
+    // }
     process.exit(1); // Exit with error code
   }
 }
