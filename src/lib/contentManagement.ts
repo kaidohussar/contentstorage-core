@@ -93,7 +93,7 @@ export async function setContentLanguage(languageCode: string): Promise<void> {
  * @returns The text string from the JSON, or the fallbackValue, or undefined.
  */
 export function getText(
-  // @ts-ignore
+  // @ts-expect-error Is fine
   pathString: DotNotationPaths,
   fallbackValue?: string
 ): string | undefined {
