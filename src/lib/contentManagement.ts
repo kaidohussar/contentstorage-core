@@ -47,36 +47,23 @@ export function getText(
     return fallbackValue;
   }
 
-  // Direct lookup since activeContent is expected to be flat and pathString is a key.
-  // We use Object.prototype.hasOwnProperty.call for safer property checking.
-  if (Object.prototype.hasOwnProperty.call(activeContent, pathString)) {
-    // Since pathString is `keyof CustomContentStructure`, activeContent[pathString] is type-safe.
-    // However, CustomContentStructure is initially `[key: string]: any` in the library,
-    // so we might need a cast here if strict typing is desired for `value`.
-    // But the consumer's augmentation makes CustomContentStructure specific.
+  const keys = (pathString as string).split('.');
+  let current: any = activeContent;
 
-    const keys = (pathString as string).split('.');
-    let current: any = activeContent;
-
-    for (const key of keys) {
-      if (current && typeof current === 'object' && key in current) {
-        current = current[key];
-      } else {
-        const msg = `[Contentstorage] getText: Path "${String(pathString)}" not found in loaded content.`;
-        console.warn(msg);
-        return fallbackValue;
-      }
-    }
-
-    if (typeof current === 'string') {
-      return current;
+  for (const key of keys) {
+    if (current && typeof current === 'object' && key in current) {
+      current = current[key];
     } else {
-      const msg = `[Contentstorage] getText: Value at path "${String(pathString)}" is not a string (actual type: ${typeof current}).`;
+      const msg = `[Contentstorage] getText: Path "${String(pathString)}" not found in loaded content.`;
       console.warn(msg);
       return fallbackValue;
     }
+  }
+
+  if (typeof current === 'string') {
+    return current;
   } else {
-    const msg = `[Contentstorage] getText: Key "${String(pathString)}" not found in loaded content'.`;
+    const msg = `[Contentstorage] getText: Value at path "${String(pathString)}" is not a string (actual type: ${typeof current}).`;
     console.warn(msg);
     return fallbackValue;
   }
