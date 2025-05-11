@@ -54,12 +54,24 @@ export function getText(
     // However, CustomContentStructure is initially `[key: string]: any` in the library,
     // so we might need a cast here if strict typing is desired for `value`.
     // But the consumer's augmentation makes CustomContentStructure specific.
-    const value = (activeContent as any)[pathString as string]; // Using `as string` because keys are strings with dots.
 
-    if (typeof value === 'string') {
-      return value;
+    const keys = (pathString as string).split('.');
+    let current: any = activeContent;
+
+    for (const key of keys) {
+      if (current && typeof current === 'object' && key in current) {
+        current = current[key];
+      } else {
+        const msg = `[Contentstorage] getText: Path "${String(pathString)}" not found in loaded content.`;
+        console.warn(msg);
+        return fallbackValue;
+      }
+    }
+
+    if (typeof current === 'string') {
+      return current;
     } else {
-      const msg = `[Contentstorage] getText: Value at key "${String(pathString)}" is not a string (actual type: ${typeof value}).'}'.`;
+      const msg = `[Contentstorage] getText: Value at path "${String(pathString)}" is not a string (actual type: ${typeof current}).`;
       console.warn(msg);
       return fallbackValue;
     }
