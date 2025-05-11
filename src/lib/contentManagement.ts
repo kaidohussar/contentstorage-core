@@ -69,3 +69,105 @@ export function getText(
     return fallbackValue;
   }
 }
+
+// Ensure getText and potentially ContentStructure are imported or available in the scope.
+// For this example, let's assume they are, along with activeContent.
+// import { getText, ContentStructure, activeContent } from './contentStorage'; // Adjust path as needed
+
+// Placeholder for ContentStructure if not already globally available for the cast
+// This would ideally be the same ContentStructure interface your getText function uses.
+
+
+export class CsText extends HTMLElement {
+  private _id: string | null = null;
+  private _keyForGetText: keyof ContentStructure | undefined;
+
+  static get observedAttributes() {
+    // Define which attributes to observe for changes.
+    return ['data-contentstorage-id'];
+  }
+
+  constructor() {
+    super();
+    // You can attach a Shadow DOM here if you need style encapsulation:
+    // this.attachShadow({ mode: 'open' });
+    // For simplicity, this example will manipulate the light DOM (this.textContent).
+  }
+
+  connectedCallback() {
+    // Called when the element is added to the document's DOM.
+    this.upgradeProperties();
+    this.updateText();
+  }
+
+  disconnectedCallback() {
+    // Called when the element is removed from the document's DOM.
+    // Perform any necessary cleanup here (e.g., remove event listeners if any were added).
+  }
+
+  attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
+    // Called when one of the observed attributes changes.
+    let shouldUpdate = false;
+    if (name === 'data-contentstorage-id' && oldValue !== newValue) {
+      this._id = newValue;
+      // Important: The string from the attribute needs to be treated as keyof ContentStructure.
+      // This cast assumes the provided ID string is a valid key.
+      // Runtime validation against available keys in `activeContent` could be added for robustness.
+      this._keyForGetText = newValue as keyof ContentStructure;
+      shouldUpdate = true;
+    }
+
+    if (shouldUpdate) {
+      this.updateText();
+    }
+  }
+
+  // Property getters/setters (optional, but good practice if you want to interact via JS properties)
+  get idKey(): string | null {
+    return this._id;
+  }
+
+  set idKey(value: string | null) {
+    this._id = value;
+    this._keyForGetText = value as keyof ContentStructure; // Cast here as well
+    if (value === null) {
+      this.removeAttribute('data-contentstorage-id');
+    } else {
+      this.setAttribute('data-contentstorage-id', value);
+    }
+    // Note: setAttribute will trigger attributeChangedCallback if observed.
+  }
+
+  /**
+   * Handles cases where properties might be set on the element before it's upgraded.
+   * Ensures initial attribute values are processed.
+   */
+  private upgradeProperties() {
+    // Check if properties were set before upgrade by checking attributes.
+    if (!this._id && this.hasAttribute('data-contentstorage-id')) {
+      this._id = this.getAttribute('data-contentstorage-id');
+      this._keyForGetText = this._id as keyof ContentStructure;
+    }
+  }
+
+  private updateText(): void {
+    if (!this.isConnected) {
+      // Don't try to update if the element isn't in the DOM.
+      return;
+    }
+
+    if (this._keyForGetText) {
+      const textValue = getText(this._keyForGetText);
+      this.textContent = textValue !== undefined ? textValue : '';
+    } else {
+      // No ID provided.
+      this.textContent = '';
+    }
+  }
+}
+
+// Define the custom element for the browser to use.
+// Ensure this is called only once.
+if (typeof window !== 'undefined' && !customElements.get('cs-text')) {
+  customElements.define('cs-text', CsText);
+}
