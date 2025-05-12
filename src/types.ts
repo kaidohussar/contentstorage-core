@@ -54,8 +54,22 @@ export type LanguageCode =
  * export interface ContentStructure extends AppSpecificRootItem {}
  * }
  */
+
+// eslint-disable-next-line
 export interface ContentStructure {
   // Intentionally empty, or with only truly optional, non-conflicting base properties.
   // Avoid index signatures like [key: string]: any; if you want augmentation
   // to strictly define the keys for `keyof` purposes.
 }
+
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace JSX {
+    interface IntrinsicElements {
+      'cs-text': {
+        'data-contentstorage-id': string;
+      };
+    }
+  }
+}
+export {};
