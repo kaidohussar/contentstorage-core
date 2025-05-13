@@ -62,14 +62,18 @@ export interface ContentStructure {
   // to strictly define the keys for `keyof` purposes.
 }
 
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace JSX {
-    interface IntrinsicElements {
-      'cs-text': {
-        'data-contentstorage-id': string;
-      };
-    }
-  }
+export interface ImageObject {
+  contentstorage_type: "image";
+  url: string;
+  altText: string;
 }
-export {};
+
+// Define the structure for a variation object
+export interface VariationData {
+  [key: string]: string; // Allows for 'default' and other variation keys
+}
+
+export interface VariationObject {
+  contentstorage_type: "variation";
+  data: VariationData;
+}
