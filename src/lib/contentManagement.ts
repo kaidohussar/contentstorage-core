@@ -68,7 +68,7 @@ export function getText(
 }
 
 export function getImage(
-  pathString: string, // Using string for dynamic paths
+  pathString: keyof ContentStructure,
   fallbackValue?: ImageObject
 ): ImageObject | undefined {
   if (!activeContent) {
@@ -77,7 +77,7 @@ export function getImage(
     return fallbackValue;
   }
 
-  const keys = pathString.split('.');
+  const keys = (pathString as string).split('.');
   let current: any = activeContent;
 
   for (const key of keys) {
