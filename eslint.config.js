@@ -15,6 +15,8 @@ export default tseslint.config(
     rules: {
       '@typescript-eslint/no-require-imports': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
+      'no-case-declarations': 'off',
+      '@typescript-eslint/ban-ts-comment': 'off'
     },
   }
 );

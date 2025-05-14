@@ -1,14 +1,14 @@
 #!/usr/bin/env node
-// ^ Shebang ensures the script is executed with Node.js
+// ^ Ensures the script is executed with Node.js
 
 import fs from 'fs/promises';
 import path from 'path';
 import axios from 'axios';
-import jsonToTS from 'json-to-ts'; // Import the library
 import chalk from 'chalk'; // Optional: for colored output
 import { loadConfig } from '../lib/configLoader.js';
 import { flattenJson } from '../helpers/flattenJson.js';
 import { CONTENTSTORAGE_CONFIG } from '../contentstorage-config.js';
+import { jsonToTS } from '../type-generation/index.js';
 
 export async function generateTypes() {
   console.log(chalk.blue('Starting type generation...'));
@@ -150,14 +150,14 @@ export async function generateTypes() {
     }
 
     // Generate TypeScript interfaces using json-to-ts
-    const rootTypeName = 'ContentRoot'; // As per your previous update
+    const rootTypeName = 'ContentRoot';
     console.log(
       chalk.blue(
         `Generating TypeScript types with root name '${rootTypeName}'...`
       )
     );
 
-    const typeDeclarations: string[] = jsonToTS.default(jsonObject, {
+    const typeDeclarations: string[] = jsonToTS(jsonObject, {
       rootName: rootTypeName,
     });
 
