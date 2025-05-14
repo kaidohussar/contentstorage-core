@@ -36,7 +36,7 @@ export async function loadConfig(): Promise<AppConfig> {
   };
 
   // Validate required fields
-  if (!mergedConfig.contentUrl) {
+  if (!mergedConfig.contentKey) {
     console.error(
       'Error: Configuration is missing the required "contentUrl" property.'
     );
@@ -46,7 +46,7 @@ export async function loadConfig(): Promise<AppConfig> {
   // Resolve paths relative to the user's project root (process.cwd())
   const finalConfig: AppConfig = {
     languageCodes: mergedConfig.languageCodes || [],
-    contentUrl: mergedConfig.contentUrl,
+    contentKey: mergedConfig.contentKey,
     contentDir: path.resolve(process.cwd(), mergedConfig.contentDir!),
     typesOutputFile: path.resolve(process.cwd(), mergedConfig.typesOutputFile!),
   };

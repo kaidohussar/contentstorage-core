@@ -8,6 +8,7 @@ import jsonToTS from 'json-to-ts'; // Import the library
 import chalk from 'chalk'; // Optional: for colored output
 import { loadConfig } from '../lib/configLoader.js';
 import { flattenJson } from '../helpers/flattenJson.js';
+import { CONTENTSTORAGE_CONFIG } from '../contentstorage-config.js';
 
 export async function generateTypes() {
   console.log(chalk.blue('Starting type generation...'));
@@ -104,13 +105,10 @@ export async function generateTypes() {
         );
       }
     } else {
-      // --- Fetch from URL ---
-      if (!config.contentUrl) {
-        throw new Error(
-          "Cannot generate types: 'contentDir' is not accessible or not specified, and 'contentUrl' is also missing in configuration."
-        );
+      if (!config.contentKey) {
+        throw new Error('Cannot generate types: contentKey is missing');
       }
-      const fileUrl = `${config.contentUrl}/${firstLanguageCode}.json`; // Adjust URL construction if necessary
+      const fileUrl = `${CONTENTSTORAGE_CONFIG.BASE_URL}/${config.contentKey}/content/${firstLanguageCode}.json`; // Adjust URL construction if necessary
       dataSourceDescription = `remote URL (${fileUrl})`;
 
       console.log(chalk.gray(`Attempting to fetch JSON from: ${fileUrl}`));
@@ -186,10 +184,6 @@ export async function generateTypes() {
   } catch (error: any) {
     console.error(chalk.red.bold('\nError generating TypeScript types:'));
     console.error(chalk.red(error.message));
-    // Optionally log stack for more details during development
-    // if (error.stack && process.env.NODE_ENV === 'development') {
-    //   console.error(chalk.gray(error.stack));
-    // }
     process.exit(1);
   }
 }

@@ -35,7 +35,6 @@ export function flattenJson(
         flattenJson(item, prefix ? `${prefix}.${index}` : `${index}`, result);
       });
     } else {
-      // It's an object (and not a special one that stops flattening, due to the preceding 'if' block)
       let isEmptyObject = true;
       for (const key in data) {
         if (Object.prototype.hasOwnProperty.call(data, key)) {
@@ -51,7 +50,6 @@ export function flattenJson(
       }
     }
   } else if (prefix) {
-    // Primitive value (string, number, boolean, null) and has a prefix
     result[prefix] = data;
   }
   // If the initial data is a primitive and prefix is empty, result remains empty.

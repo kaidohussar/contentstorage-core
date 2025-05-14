@@ -5,6 +5,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import chalk from 'chalk';
 import { loadConfig } from '../lib/configLoader.js';
+import { CONTENTSTORAGE_CONFIG } from '../contentstorage-config.js';
 
 export async function pullContent() {
   console.log(chalk.blue('Starting content pull...'));
@@ -12,7 +13,7 @@ export async function pullContent() {
   // Load configuration (assuming this function is defined elsewhere and works)
   const config = await loadConfig();
 
-  console.log(chalk.gray(`Content base URL: ${config.contentUrl}`));
+  console.log(chalk.gray(`Content key: ${config.contentKey}`));
   console.log(chalk.gray(`Saving content to: ${config.contentDir}`));
 
   try {
@@ -38,7 +39,7 @@ export async function pullContent() {
 
     // Process each language code
     for (const languageCode of config.languageCodes) {
-      const fileUrl = `${config.contentUrl}/${languageCode}.json`;
+      const fileUrl = `${CONTENTSTORAGE_CONFIG.BASE_URL}/${config.contentKey}/content/${languageCode}.json`;
       const filename = `${languageCode}.json`;
       const outputPath = path.join(config.contentDir, filename);
 

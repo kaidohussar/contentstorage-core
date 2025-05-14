@@ -1,6 +1,6 @@
 export type AppConfig = {
   languageCodes: LanguageCode[];
-  contentUrl: string;
+  contentKey: string;
   contentDir: string;
   typesOutputFile: string;
 };
@@ -63,7 +63,7 @@ export interface ContentStructure {
 }
 
 export interface ImageObject {
-  contentstorage_type: "image";
+  contentstorage_type: 'image';
   url: string;
   altText: string;
 }
@@ -74,6 +74,6 @@ export interface VariationData {
 }
 
 export interface VariationObject {
-  contentstorage_type: "variation";
+  contentstorage_type: 'variation';
   data: VariationData;
 }

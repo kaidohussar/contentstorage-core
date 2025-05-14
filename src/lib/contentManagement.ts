@@ -5,7 +5,7 @@ let activeContent: object | null = null;
 /**
  * Loads and sets the content for a specific language.
  * It will internally ensure the application configuration (for contentDir) is loaded.
- * @param languageCode The language code (e.g., 'EN', 'FR') for the JSON file to load.
+ * @param contentJson
  */
 export function setContentLanguage(contentJson: object) {
   if (!contentJson || typeof contentJson !== 'object') {
@@ -107,7 +107,9 @@ export function getImage(
 
 export function getVariation<Path extends keyof ContentStructure>(
   pathString: Path,
-  variationKey?: ContentStructure[Path] extends { data: infer D } ? keyof D : string,
+  variationKey?: ContentStructure[Path] extends { data: infer D }
+    ? keyof D
+    : string,
   fallbackString?: string
 ): string | undefined {
   if (!activeContent) {
@@ -138,7 +140,11 @@ export function getVariation<Path extends keyof ContentStructure>(
   ) {
     const variationObject = current as VariationObject;
 
-    if (variationKey && typeof variationKey === 'string' && variationKey in variationObject.data) {
+    if (
+      variationKey &&
+      typeof variationKey === 'string' &&
+      variationKey in variationObject.data
+    ) {
       if (typeof variationObject.data[variationKey] === 'string') {
         return variationObject.data[variationKey];
       } else {
@@ -150,7 +156,8 @@ export function getVariation<Path extends keyof ContentStructure>(
     // If specific variationKey is not found or not provided, try to return the 'default' variation
     if ('default' in variationObject.data && typeof variationKey === 'string') {
       if (typeof variationObject.data.default === 'string') {
-        if (variationKey && variationKey !== 'default') { // Warn if specific key was requested but default is being returned
+        if (variationKey && variationKey !== 'default') {
+          // Warn if specific key was requested but default is being returned
           const msg = `[Contentstorage] getVariation: Variation key "${variationKey}" not found at path "${pathString}". Returning 'default' variation.`;
           console.warn(msg);
         }
@@ -165,12 +172,9 @@ export function getVariation<Path extends keyof ContentStructure>(
     const msg = `[Contentstorage] getVariation: Neither variation key "${variationKey?.toString()}" nor 'default' variation found or valid at path "${pathString}".`;
     console.warn(msg);
     return fallbackString;
-
   } else {
     const msg = `[Contentstorage] getVariation: Value at path "${pathString}" is not a valid variation object (actual value: ${JSON.stringify(current)}).`;
     console.warn(msg);
     return fallbackString;
   }
 }
-
-
