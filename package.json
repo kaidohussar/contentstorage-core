@@ -28,7 +28,6 @@
     "axios": "^1.7.2",
     "chalk": "^4.1.2",
     "es7-shim": "^6.0.0",
-    "hash.js": "^1.0.3",
     "pluralize": "^3.1.0"
   },
   "devDependencies": {

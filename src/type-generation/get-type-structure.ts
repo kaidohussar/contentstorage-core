@@ -1,9 +1,19 @@
-import * as hash from "hash.js";
+import * as crypto from 'crypto';
 import { TypeDescription, TypeGroup, TypeStructure } from './model.js';
-import { findTypeById, getTypeDescriptionGroup, isArray, isDate, isHash, isObject, onlyUnique } from './util.js';
+import {
+  findTypeById,
+  getTypeDescriptionGroup,
+  isArray,
+  isDate,
+  isHash,
+  isObject,
+  onlyUnique,
+} from './util.js';
 
-
-function createTypeDescription(typeObj: any | string[], isUnion: boolean): TypeDescription {
+function createTypeDescription(
+  typeObj: any | string[],
+  isUnion: boolean
+): TypeDescription {
   if (isArray(typeObj)) {
     return {
       id: Hash(JSON.stringify([...typeObj, isUnion])),
@@ -18,7 +28,11 @@ function createTypeDescription(typeObj: any | string[], isUnion: boolean): TypeD
   }
 }
 
-function getIdByType(typeObj: any | string[], types: TypeDescription[], isUnion: boolean = false): string {
+function getIdByType(
+  typeObj: any | string[],
+  types: TypeDescription[],
+  isUnion: boolean = false
+): string {
   let typeDesc = types.find((el) => {
     return typeObjectMatchesTypeDesc(typeObj, el, isUnion);
   });
@@ -32,13 +46,27 @@ function getIdByType(typeObj: any | string[], types: TypeDescription[], isUnion:
 }
 
 function Hash(content: string): string {
-  return (hash as any).sha1().update(content).digest("hex");
+  // Create a new SHA-1 hash object
+  const sha1Hash = crypto.createHash('sha1');
+
+  // Update the hash object with the content
+  sha1Hash.update(content);
+
+  // Calculate the digest in hexadecimal format
+  return sha1Hash.digest('hex');
 }
 
-function typeObjectMatchesTypeDesc(typeObj: any | string[], typeDesc: TypeDescription, isUnion: any): boolean {
+function typeObjectMatchesTypeDesc(
+  typeObj: any | string[],
+  typeDesc: TypeDescription,
+  isUnion: any
+): boolean {
   if (isArray(typeObj)) {
-    // @ts-expect-error
-    return arraysContainSameElements(typeObj, typeDesc.arrayOfTypes) && typeDesc.isUnion === isUnion;
+    return (
+      // @ts-ignore
+      arraysContainSameElements(typeObj, typeDesc.arrayOfTypes) &&
+      typeDesc.isUnion === isUnion
+    );
   } else {
     return objectsHaveSameEntries(typeObj, typeDesc.typeObj);
   }
@@ -47,7 +75,7 @@ function typeObjectMatchesTypeDesc(typeObj: any | string[], typeDesc: TypeDescri
 function arraysContainSameElements(arr1: any[], arr2: any[]): boolean {
   if (arr1 === undefined || arr2 === undefined) return false;
 
-  return arr1.sort().join("") === arr2.sort().join("");
+  return arr1.sort().join('') === arr2.sort().join('');
 }
 
 function objectsHaveSameEntries(obj1: any, obj2: any): boolean {
@@ -67,9 +95,9 @@ function objectsHaveSameEntries(obj1: any, obj2: any): boolean {
 
 function getSimpleTypeName(value: any): string {
   if (value === null) {
-    return "null";
+    return 'null';
   } else if (value instanceof Date) {
-    return "Date";
+    return 'Date';
   } else {
     return typeof value;
   }
@@ -98,20 +126,20 @@ function createTypeObject(obj: any, types: TypeDescription[]): any {
   }, {});
 }
 
-
-function getMergedObjects(typesOfArray: TypeDescription[], types: TypeDescription[]): string {
+function getMergedObjects(
+  typesOfArray: TypeDescription[],
+  types: TypeDescription[]
+): string {
   const typeObjects = typesOfArray.map((typeDesc) => typeDesc.typeObj);
 
-
   const allKeys = typeObjects
-     
+
     // @ts-expect-error
     .map((typeObj) => Object.keys(typeObj))
     .reduce((a, b) => [...a, ...b], [])
     .filter(onlyUnique);
 
   const commonKeys = typeObjects.reduce((commonKeys: string[], typeObj) => {
-     
     // @ts-expect-error
     const keys = Object.keys(typeObj);
     return commonKeys.filter((key) => keys.includes(key));
@@ -147,14 +175,17 @@ function getMergedObjects(typesOfArray: TypeDescription[], types: TypeDescriptio
 }
 
 function toOptionalKey(key: string): string {
-  return key.endsWith("--?") ? key : `${key}--?`;
+  return key.endsWith('--?') ? key : `${key}--?`;
 }
 
-function getMergedArrays(typesOfArray: TypeDescription[], types: TypeDescription[]): string {
-   
+function getMergedArrays(
+  typesOfArray: TypeDescription[],
+  types: TypeDescription[]
+): string {
   // @ts-expect-error
-  const idsOfArrayTypes = typesOfArray?.map((typeDesc) => typeDesc.arrayOfTypes)
-     
+  const idsOfArrayTypes = typesOfArray
+    ?.map((typeDesc) => typeDesc.arrayOfTypes)
+
     // @ts-expect-error
     .reduce((a, b) => [...a, ...b], [])
     .filter(onlyUnique);
@@ -167,7 +198,10 @@ function getMergedArrays(typesOfArray: TypeDescription[], types: TypeDescription
 }
 
 // we merge union types example: (number | string), null -> (number | string | null)
-function getMergedUnion(typesOfArray: string[], types: TypeDescription[]): string {
+function getMergedUnion(
+  typesOfArray: string[],
+  types: TypeDescription[]
+): string {
   const innerUnionsTypes = typesOfArray
     .map((id) => {
       return findTypeById(id, types);
@@ -176,32 +210,47 @@ function getMergedUnion(typesOfArray: string[], types: TypeDescription[]): strin
     .map((_) => _.arrayOfTypes)
     .reduce((a, b) => [...a, ...b], []);
 
-  const primitiveTypes = typesOfArray.filter((id) => !findTypeById(id, types) || !findTypeById(id, types).isUnion); // primitives or not union
+  const primitiveTypes = typesOfArray.filter(
+    (id) => !findTypeById(id, types) || !findTypeById(id, types).isUnion
+  ); // primitives or not union
   return getIdByType([...innerUnionsTypes, ...primitiveTypes], types, true);
 }
 
-function getInnerArrayType(typesOfArray: string[], types: TypeDescription[]): string | undefined {
+function getInnerArrayType(
+  typesOfArray: string[],
+  types: TypeDescription[]
+): string | undefined {
   // return inner array type
 
-  const containsUndefined = typesOfArray.includes("undefined");
+  const containsUndefined = typesOfArray.includes('undefined');
 
-  const arrayTypesDescriptions = typesOfArray.map((id) => findTypeById(id, types)).filter((_) => !!_);
+  const arrayTypesDescriptions = typesOfArray
+    .map((id) => findTypeById(id, types))
+    .filter((_) => !!_);
 
   const allArrayType =
-    arrayTypesDescriptions.filter((typeDesc) => getTypeDescriptionGroup(typeDesc) === TypeGroup.Array).length ===
-    typesOfArray.length;
+    arrayTypesDescriptions.filter(
+      (typeDesc) => getTypeDescriptionGroup(typeDesc) === TypeGroup.Array
+    ).length === typesOfArray.length;
 
   const allArrayTypeWithUndefined =
-    arrayTypesDescriptions.filter((typeDesc) => getTypeDescriptionGroup(typeDesc) === TypeGroup.Array).length + 1 ===
+    arrayTypesDescriptions.filter(
+      (typeDesc) => getTypeDescriptionGroup(typeDesc) === TypeGroup.Array
+    ).length +
+      1 ===
       typesOfArray.length && containsUndefined;
 
   const allObjectTypeWithUndefined =
-    arrayTypesDescriptions.filter((typeDesc) => getTypeDescriptionGroup(typeDesc) === TypeGroup.Object).length + 1 ===
+    arrayTypesDescriptions.filter(
+      (typeDesc) => getTypeDescriptionGroup(typeDesc) === TypeGroup.Object
+    ).length +
+      1 ===
       typesOfArray.length && containsUndefined;
 
   const allObjectType =
-    arrayTypesDescriptions.filter((typeDesc) => getTypeDescriptionGroup(typeDesc) === TypeGroup.Object).length ===
-    typesOfArray.length;
+    arrayTypesDescriptions.filter(
+      (typeDesc) => getTypeDescriptionGroup(typeDesc) === TypeGroup.Object
+    ).length === typesOfArray.length;
 
   if (typesOfArray.length === 0) {
     // no types in array -> empty union type
@@ -222,12 +271,18 @@ function getInnerArrayType(typesOfArray: string[], types: TypeDescription[]): st
 
     // all array types with posibble undefined, result type = undefined | (*mergedArray*)[]
     if (allArrayTypeWithUndefined) {
-      return getMergedUnion([getMergedArrays(arrayTypesDescriptions, types), "undefined"], types);
+      return getMergedUnion(
+        [getMergedArrays(arrayTypesDescriptions, types), 'undefined'],
+        types
+      );
     }
 
     // all object types with posibble undefined, result type = undefined | *mergedObject*
     if (allObjectTypeWithUndefined) {
-      return getMergedUnion([getMergedObjects(arrayTypesDescriptions, types), "undefined"], types);
+      return getMergedUnion(
+        [getMergedObjects(arrayTypesDescriptions, types), 'undefined'],
+        types
+      );
     }
 
     // if they are mixed or all primitive we cant merge them so we return as mixed union type
@@ -241,7 +296,9 @@ export function getTypeStructure(
 ): TypeStructure {
   switch (getTypeGroup(targetObj)) {
     case TypeGroup.Array:
-      const typesOfArray = (<any[]>targetObj).map((_) => getTypeStructure(_, types).rootTypeId).filter(onlyUnique);
+      const typesOfArray = (<any[]>targetObj)
+        .map((_) => getTypeStructure(_, types).rootTypeId)
+        .filter(onlyUnique);
       const arrayInnerTypeId = getInnerArrayType(typesOfArray, types); // create "union type of array types"
       const typeId = getIdByType([arrayInnerTypeId], types); // create type "array of union type"
 
@@ -292,7 +349,7 @@ function getAllUsedTypeIds({ rootTypeId, types }: TypeStructure): string[] {
 
       case TypeGroup.Object:
         const objSubTypes: any = Object.values(typeDesc.typeObj as any)
-           
+
           // @ts-expect-error
           .filter(isHash)
           .map((typeId: any) => {
@@ -310,7 +367,9 @@ function getAllUsedTypeIds({ rootTypeId, types }: TypeStructure): string[] {
 export function optimizeTypeStructure(typeStructure: TypeStructure) {
   const usedTypeIds = getAllUsedTypeIds(typeStructure);
 
-  const optimizedTypes = typeStructure.types.filter((typeDesc) => usedTypeIds.includes(typeDesc.id));
+  const optimizedTypes = typeStructure.types.filter((typeDesc) =>
+    usedTypeIds.includes(typeDesc.id)
+  );
 
   typeStructure.types = optimizedTypes;
 }
