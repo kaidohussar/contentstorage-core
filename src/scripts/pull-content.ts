@@ -77,20 +77,10 @@ export async function pullContent() {
 
         console.log(
           chalk.green(
-            `Received and json for ${languageCode}. Saving to ${outputPath}`
-          )
-        );
-
-        await fs.writeFile(outputPath, JSON.stringify(jsonData, null, 2));
-        console.log(chalk.green(`Successfully saved ${outputPath}`));
-
-        console.log(
-          chalk.green(
             `Received JSON for ${languageCode}. Saving to ${outputPath}`
           )
         );
 
-        // Write the JSON data to the file
         await fs.writeFile(outputPath, JSON.stringify(jsonData, null, 2));
         console.log(chalk.green(`Successfully saved ${outputPath}`));
       } catch (error: any) {

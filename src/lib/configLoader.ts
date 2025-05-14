@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import { AppConfig } from '../types.js';
+import chalk from 'chalk';
 
 const DEFAULT_CONFIG: Partial<AppConfig> = {
   languageCodes: [],
@@ -17,17 +18,21 @@ export async function loadConfig(): Promise<AppConfig> {
       // Use require for JS config file
       const loadedModule = await import(configPath);
       userConfig = loadedModule.default || loadedModule;
-      console.log('Loaded config', JSON.stringify(userConfig));
-      console.log(`Loaded configuration from ${configPath}`);
+      console.log(chalk.blue('Loaded config', JSON.stringify(userConfig)));
+      console.log(chalk.blue(`Loaded configuration from ${configPath}`));
     } catch (error) {
-      console.error(`Error loading configuration from ${configPath}:`, error);
+      console.error(
+        chalk.red(`Error loading configuration from ${configPath}:`, error)
+      );
       // Decide if you want to proceed with defaults or exit
       // For now, we'll proceed with defaults but warn
-      console.warn('Proceeding with default configuration.');
+      console.warn(chalk.yellow('Proceeding with default configuration.'));
       userConfig = {}; // Reset in case of partial load failure
     }
   } else {
-    console.log('No content.config.js found. Using default configuration.');
+    console.log(
+      chalk.blue('No content.config.js found. Using default configuration.')
+    );
   }
 
   const mergedConfig: Partial<AppConfig> = {
@@ -38,7 +43,9 @@ export async function loadConfig(): Promise<AppConfig> {
   // Validate required fields
   if (!mergedConfig.contentKey) {
     console.error(
-      'Error: Configuration is missing the required "contentKey" property.'
+      chalk.red(
+        'Error: Configuration is missing the required "contentKey" property.'
+      )
     );
     process.exit(1);
   }
