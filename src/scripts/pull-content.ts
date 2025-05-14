@@ -13,8 +13,8 @@ export async function pullContent() {
   // Load configuration (assuming this function is defined elsewhere and works)
   const config = await loadConfig();
 
-  console.log(chalk.gray(`Content key: ${config.contentKey}`));
-  console.log(chalk.gray(`Saving content to: ${config.contentDir}`));
+  console.log(chalk.blue(`Content key: ${config.contentKey}`));
+  console.log(chalk.blue(`Saving content to: ${config.contentDir}`));
 
   try {
     // Validate languageCodes array
@@ -44,7 +44,11 @@ export async function pullContent() {
       const outputPath = path.join(config.contentDir, filename);
 
       console.log(chalk.blue(`\nProcessing language: ${languageCode}`));
-      console.log(chalk.gray(`Workspaceing from: ${fileUrl}`));
+      console.log(
+        chalk.blue(
+          `Using following contentKey to fetch json: ${config.contentKey}`
+        )
+      );
 
       try {
         // Fetch data for the current language

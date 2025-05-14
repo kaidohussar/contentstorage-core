@@ -10,7 +10,7 @@ let activeContent: object | null = null;
 export function setContentLanguage(contentJson: object) {
   if (!contentJson || typeof contentJson !== 'object') {
     throw new Error(
-      '[Contentstorage] Invalid contentUrl provided to setContentLanguage.'
+      '[Contentstorage] Invalid contentKey might be provided which caused setContentLanguage to fail.'
     );
   }
 

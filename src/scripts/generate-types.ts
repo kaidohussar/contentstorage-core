@@ -35,7 +35,7 @@ export async function generateTypes() {
   }
 
   console.log(
-    chalk.gray(`TypeScript types will be saved to: ${config.typesOutputFile}`)
+    chalk.blue(`TypeScript types will be saved to: ${config.typesOutputFile}`)
   );
 
   let jsonObject: any; // To hold the JSON data from either local or remote source
@@ -49,7 +49,7 @@ export async function generateTypes() {
         await fs.stat(config.contentDir); // Check if directory exists
         attemptLocalLoad = true;
         console.log(
-          chalk.gray(`Local content directory found: ${config.contentDir}`)
+          chalk.blue(`Local content directory found: ${config.contentDir}`)
         );
       } catch (statError: any) {
         if (statError.code === 'ENOENT') {
@@ -80,13 +80,13 @@ export async function generateTypes() {
       const jsonFilePath = path.join(config.contentDir, targetFilename);
       dataSourceDescription = `local file (${jsonFilePath})`;
 
-      console.log(chalk.gray(`Attempting to read JSON from: ${jsonFilePath}`));
+      console.log(chalk.blue(`Attempting to read JSON from: ${jsonFilePath}`));
       try {
         const jsonContentString = await fs.readFile(jsonFilePath, 'utf-8');
-        console.log(chalk.gray('Parsing JSON'));
+        console.log(chalk.blue('Parsing JSON'));
         const parsendJsonObject = JSON.parse(jsonContentString);
 
-        console.log(chalk.gray('Flattening JSON for type generation'));
+        console.log(chalk.blue('Flattening JSON for type generation'));
         jsonObject = flattenJson(parsendJsonObject);
 
         console.log(
@@ -111,12 +111,12 @@ export async function generateTypes() {
       const fileUrl = `${CONTENTSTORAGE_CONFIG.BASE_URL}/${config.contentKey}/content/${firstLanguageCode}.json`; // Adjust URL construction if necessary
       dataSourceDescription = `remote URL (${fileUrl})`;
 
-      console.log(chalk.gray(`Attempting to fetch JSON from: ${fileUrl}`));
+      console.log(chalk.blue(`Attempting to fetch JSON from: ${fileUrl}`));
       try {
         const response = await axios.get(fileUrl, { responseType: 'json' });
         const jsonResponse = response.data;
 
-        console.log(chalk.gray('Flattening JSON for type generation'));
+        console.log(chalk.blue('Flattening JSON for type generation'));
         jsonObject = flattenJson(jsonResponse);
 
         if (typeof jsonObject !== 'object' || jsonObject === null) {
@@ -152,7 +152,7 @@ export async function generateTypes() {
     // Generate TypeScript interfaces using json-to-ts
     const rootTypeName = 'ContentRoot'; // As per your previous update
     console.log(
-      chalk.gray(
+      chalk.blue(
         `Generating TypeScript types with root name '${rootTypeName}'...`
       )
     );
