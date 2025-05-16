@@ -1,7 +1,13 @@
-import { ContentStructure, ImageObject, VariationObject } from '../types.js';
+import {
+  AppConfig,
+  ContentStructure,
+  ImageObject,
+  VariationObject,
+} from '../types.js';
 import { populateTextWithVariables } from '../helpers/populateTextWithVariables.js';
 
-let activeContent: object | null = null;
+export let activeContent: object | null = null;
+export let appConfig: AppConfig | null = null;
 
 /**
  * Loads and sets the content for a specific language.
@@ -26,6 +32,31 @@ export function setContentLanguage(contentJson: object) {
   }
 }
 
+export function initContentStorage(config: AppConfig) {
+  if (
+    !config ||
+    typeof config !== 'object' ||
+    !config.contentKey ||
+    !Array.isArray(config.languageCodes)
+  ) {
+    if (!config.contentKey) {
+      throw new Error(
+        '[Contentstorage] No contentKey provided in initContentStorage function.'
+      );
+    }
+
+    if (!Array.isArray(config.languageCodes)) {
+      throw new Error(
+        '[Contentstorage] No languageCodes provided in initContentStorage function.'
+      );
+    }
+
+    throw new Error('[Contentstorage] Invalid config.');
+  }
+
+  appConfig = config;
+}
+
 /**
  * Retrieves the text string from the loaded JSON content for the given path.
  * Autocompletion for pathString is enabled via module augmentation of CustomContentStructure.
@@ -41,7 +72,7 @@ export function getText<Path extends keyof ContentStructure>(
   pathString: Path,
   variables?: ContentStructure[Path] extends { variables: infer Vars }
     ? keyof Vars
-    : Record<string, any>,
+    : Record<string, any>
 ): string | undefined {
   if (!activeContent) {
     const msg = `[Contentstorage] getText: Content not loaded (Key: "${String(pathString)}"). Ensure setContentLanguage() was called and completed successfully.`;
@@ -157,7 +188,7 @@ export function getVariation<Path extends keyof ContentStructure>(
         const current = variationObject.data[variationKey];
 
         if (!variables || Object.keys(variables).length === 0) {
-          return current
+          return current;
         }
 
         return populateTextWithVariables(current, variables, pathString);
@@ -171,19 +202,27 @@ export function getVariation<Path extends keyof ContentStructure>(
     if ('default' in variationObject.data && typeof variationKey === 'string') {
       if (typeof variationObject.data.default === 'string') {
         if (variationKey && variationKey !== 'default') {
-          console.warn(`[Contentstorage] getVariation: Variation key "${variationKey}" not found at path "${pathString}". Returning 'default' variation.`);
+          console.warn(
+            `[Contentstorage] getVariation: Variation key "${variationKey}" not found at path "${pathString}". Returning 'default' variation.`
+          );
         }
         return variationObject.data.default;
       } else {
-        console.warn(`[Contentstorage] getVariation: 'default' variation value at path "${pathString}" is not a string (actual type: ${typeof variationObject.data.default}).`);
+        console.warn(
+          `[Contentstorage] getVariation: 'default' variation value at path "${pathString}" is not a string (actual type: ${typeof variationObject.data.default}).`
+        );
       }
     }
 
     // If neither specific key nor 'default' is found or valid
-    console.warn(`[Contentstorage] getVariation: Neither variation key "${variationKey?.toString()}" nor 'default' variation found or valid at path "${pathString}".`);
+    console.warn(
+      `[Contentstorage] getVariation: Neither variation key "${variationKey?.toString()}" nor 'default' variation found or valid at path "${pathString}".`
+    );
     return '';
   } else {
-    console.warn(`[Contentstorage] getVariation: Value at path "${pathString}" is not a valid variation object (actual value: ${JSON.stringify(current)}).`);
+    console.warn(
+      `[Contentstorage] getVariation: Value at path "${pathString}" is not a valid variation object (actual value: ${JSON.stringify(current)}).`
+    );
     return '';
   }
 }
