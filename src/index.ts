@@ -5,10 +5,20 @@ import {
   getText,
   getImage,
   getVariation,
+  initContentStorage,
 } from './lib/contentManagement.js';
 
+import { fetchContent } from './lib/functions/fetchContent.js';
+
 export { AppConfig, LanguageCode, ContentStructure };
-export { setContentLanguage, getText, getImage, getVariation };
+export {
+  initContentStorage,
+  fetchContent,
+  setContentLanguage,
+  getText,
+  getImage,
+  getVariation,
+};
 
 async function isLiveEditorMode() {
   try {
