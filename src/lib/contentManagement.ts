@@ -74,11 +74,16 @@ export function getText<Path extends keyof ContentStructure>(
   variables?: ContentStructure[Path] extends { variables: infer Vars }
     ? keyof Vars
     : Record<string, any>
-): GetTextReturn | '' {
+): GetTextReturn {
+  const defaultVal: GetTextReturn = {
+    contentKey,
+    text: '',
+  };
+
   if (!activeContent) {
     const msg = `[Contentstorage] getText: Content not loaded (Key: "${String(contentKey)}"). Ensure setContentLanguage() was called and completed successfully.`;
     console.warn(msg);
-    return '';
+    return defaultVal;
   }
 
   const keys = (contentKey as string).split('.');
@@ -90,7 +95,7 @@ export function getText<Path extends keyof ContentStructure>(
     } else {
       const msg = `[Contentstorage] getText: Path "${String(contentKey)}" not found in loaded content.`;
       console.warn(msg);
-      return '';
+      return defaultVal;
     }
   }
 
@@ -109,7 +114,7 @@ export function getText<Path extends keyof ContentStructure>(
   } else {
     const msg = `[Contentstorage] getText: Value at path "${String(contentKey)}" is not a string (actual type: ${typeof current}).`;
     console.warn(msg);
-    return '';
+    return defaultVal;
   }
 }
 
