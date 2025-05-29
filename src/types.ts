@@ -62,6 +62,21 @@ export interface ContentStructure {
   // to strictly define the keys for `keyof` purposes.
 }
 
+export type GetTextReturn = {
+  contentKey: string;
+  text: string;
+};
+
+export type GetImageReturn = {
+  contentKey: string;
+  data: ImageObject;
+};
+
+export type GetVariationReturn = {
+  contentKey: string;
+  text: string;
+};
+
 export interface ImageObject {
   contentstorage_type: 'image';
   url: string;
