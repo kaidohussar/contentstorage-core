@@ -9,7 +9,8 @@ import {
 import { populateTextWithVariables } from '../helpers/populateTextWithVariables.js';
 
 export let activeContent: object | null = null;
-export let appConfig: AppConfig | null = null;
+export let appConfig: Pick<AppConfig, 'contentKey' | 'languageCodes'> | null =
+  null;
 
 /**
  * Loads and sets the content for a specific language.
@@ -34,7 +35,9 @@ export function setContentLanguage(contentJson: object) {
   }
 }
 
-export function initContentStorage(config: AppConfig) {
+export function initContentStorage(
+  config: Pick<AppConfig, 'contentKey' | 'languageCodes'>
+) {
   if (
     !config ||
     typeof config !== 'object' ||

@@ -23,7 +23,6 @@ export async function fetchContent(language?: LanguageCode) {
     const response = await axios.get(fileUrl);
     const jsonData = response.data;
 
-    // Basic check for data existence, although axios usually throws for non-2xx responses
     if (jsonData === undefined || jsonData === null) {
       throw new Error(
         `No data received from ${fileUrl} for language ${languageToFetch}.`
