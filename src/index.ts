@@ -20,6 +20,8 @@ export {
   getVariation,
 };
 
+export let isInContentstorageIframe = false;
+
 async function isLiveEditorMode() {
   try {
     const inIframe = window.self !== window.top;
@@ -39,6 +41,8 @@ isLiveEditorMode().then(async (isLiveMode) => {
   if (!isLiveMode) {
     return;
   }
+
+  isInContentstorageIframe = true;
 
   const cdnScriptUrl = `https://your-cdn-domain.com/contentstorage-live-editor.js?contentstorage-live-editor=true`;
 

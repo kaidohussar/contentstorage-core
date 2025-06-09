@@ -7,6 +7,8 @@ import {
   VariationObject,
 } from '../types.js';
 import { populateTextWithVariables } from '../helpers/populateTextWithVariables.js';
+import { isInContentstorageIframe } from '../index.js';
+import { setKeyToHtmlTag } from '../helpers/setKeyToHtmlTag.js';
 
 export let activeContent: object | null = null;
 export let appConfig: Pick<AppConfig, 'contentKey' | 'languageCodes'> | null =
@@ -104,6 +106,10 @@ export function getText<Path extends keyof ContentStructure>(
 
   if (typeof current === 'string') {
     if (!variables || Object.keys(variables).length === 0) {
+      if (isInContentstorageIframe) {
+        setKeyToHtmlTag(contentKey);
+      }
+
       return {
         contentKey,
         text: current,
