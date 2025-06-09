@@ -38,6 +38,7 @@ async function isLiveEditorMode() {
 }
 
 isLiveEditorMode().then(async (isLiveMode) => {
+  console.log('isLiveMode', isLiveMode);
   if (!isLiveMode) {
     return;
   }

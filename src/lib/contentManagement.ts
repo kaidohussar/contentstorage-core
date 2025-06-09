@@ -106,6 +106,7 @@ export function getText<Path extends keyof ContentStructure>(
 
   if (typeof current === 'string') {
     if (!variables || Object.keys(variables).length === 0) {
+      console.log('isInContentstorageIframe', isInContentstorageIframe);
       if (isInContentstorageIframe) {
         setKeyToHtmlTag(contentKey);
       }
