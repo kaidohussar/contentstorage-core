@@ -1,9 +1,6 @@
 declare global {
   interface Window {
-    memoryMap: Map<
-      string,
-      { timerId: any; expiresAt: number; ids: Set<string> }
-    >;
+    memoryMap: Map<string, { ids: Set<string> }>;
   }
 }
 

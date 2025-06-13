@@ -13,12 +13,6 @@ export let appConfig: Pick<AppConfig, 'contentKey' | 'languageCodes'> | null =
   null;
 
 /**
- * The time in milliseconds an ID will remain in the memoryMap after its last call.
- * @type {number}
- */
-const EVICTION_TIME_MS = 10000;
-
-/**
  * NB! Only used when live editor mode is on
  */
 window.memoryMap = new Map();
@@ -118,21 +112,11 @@ export function getText<Path extends keyof ContentStructure>(
       const key = current;
 
       const existingEntry = window.memoryMap.get(key);
-      if (existingEntry) {
-        clearTimeout(existingEntry.timerId);
-      }
 
       const idSet = existingEntry ? existingEntry.ids : new Set<string>();
       idSet.add(contentKey); // Add the current ID to the set.
 
-      const newTimerId = setTimeout(() => {
-        console.log(`%cEvicting text: %c"${key}"`);
-        window.memoryMap.delete(key);
-      }, EVICTION_TIME_MS);
-
       window.memoryMap.set(key, {
-        timerId: newTimerId,
-        expiresAt: Date.now() + EVICTION_TIME_MS,
         ids: idSet,
       });
     }
