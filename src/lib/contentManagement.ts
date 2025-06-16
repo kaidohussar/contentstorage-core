@@ -192,12 +192,12 @@ export function getImage(
         type: 'image',
       });
     }
-
+    console.log('currentData.url', currentData.url);
     return {
       contentKey,
       data: {
         ...currentData,
-        url: `https://di0fmnnsdfsl2.cloudfront.net/${currentData.url}`,
+        url: `https://kaidohussar.dev/${currentData.url}`,
       },
     };
   } else {
