@@ -180,12 +180,13 @@ export function getImage(
     const currentData = current as ImageObject;
 
     if (window.parent && window.parent !== window) {
-      const key = currentData.url;
+      const key = `https://di0fmnnsdfsl2.cloudfront.net/${currentData.url}`;
 
       const existingEntry = window.memoryMap.get(key);
 
       const idSet = existingEntry ? existingEntry.ids : new Set<string>();
       idSet.add(contentKey); // Add the current ID to the set.
+
 
       window.memoryMap.set(key, {
         ids: idSet,
