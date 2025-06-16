@@ -178,9 +178,9 @@ export function getImage(
     typeof current.url === 'string'
   ) {
     const currentData = current as ImageObject;
+    const key = `https://di0fmnnsdfsl2.cloudfront.net/${currentData.url}`;
 
     if (window.parent && window.parent !== window) {
-      const key = `https://di0fmnnsdfsl2.cloudfront.net/${currentData.url}`;
 
       const existingEntry = window.memoryMap.get(key);
 
@@ -198,7 +198,7 @@ export function getImage(
       contentKey,
       data: {
         ...currentData,
-        url: `https://di0fmnnsdfsl2.cloudfront.net/${currentData.url}`,
+        url: key,
       },
     };
   } else {
