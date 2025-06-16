@@ -193,6 +193,8 @@ export function getImage(
       });
     }
 
+    currentData.url = `https://di0fmnnsdfsl2.cloudfront.net/${currentData.url}`;
+
     return {
       contentKey,
       data: currentData,
