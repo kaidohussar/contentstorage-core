@@ -4,6 +4,7 @@ import {
   GetImageReturn,
   GetTextReturn,
   GetVariationReturn,
+  ImageObject,
   VariationObject,
 } from '../types.js';
 import { populateTextWithVariables } from '../helpers/populateTextWithVariables.js';
@@ -118,6 +119,7 @@ export function getText<Path extends keyof ContentStructure>(
 
       window.memoryMap.set(key, {
         ids: idSet,
+        type: 'text',
       });
     }
 
@@ -175,9 +177,25 @@ export function getImage(
     current.contentstorage_type === 'image' &&
     typeof current.url === 'string'
   ) {
+    const currentData = current as ImageObject;
+
+    if (window.parent && window.parent !== window) {
+      const key = currentData.url;
+
+      const existingEntry = window.memoryMap.get(key);
+
+      const idSet = existingEntry ? existingEntry.ids : new Set<string>();
+      idSet.add(contentKey); // Add the current ID to the set.
+
+      window.memoryMap.set(key, {
+        ids: idSet,
+        type: 'image',
+      });
+    }
+
     return {
       contentKey,
-      data: current,
+      data: currentData,
     };
   } else {
     const msg = `[Contentstorage] getImage: Value at path "${contentKey}" is not a valid image object (actual value: ${JSON.stringify(current)}).`;
