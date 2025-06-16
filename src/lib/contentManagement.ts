@@ -193,11 +193,12 @@ export function getImage(
       });
     }
 
-    currentData.url = `https://di0fmnnsdfsl2.cloudfront.net/${currentData.url}`;
-
     return {
       contentKey,
-      data: currentData,
+      data: {
+        ...currentData,
+        url: `https://di0fmnnsdfsl2.cloudfront.net/${currentData.url}`,
+      },
     };
   } else {
     const msg = `[Contentstorage] getImage: Value at path "${contentKey}" is not a valid image object (actual value: ${JSON.stringify(current)}).`;
