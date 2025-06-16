@@ -197,7 +197,7 @@ export function getImage(
       contentKey,
       data: {
         ...currentData,
-        url: `https://kaidohussar.dev/${currentData.url}`,
+        url: `https://di0fmnnsdfsl2.cloudfront.net/${currentData.url}`,
       },
     };
   } else {
