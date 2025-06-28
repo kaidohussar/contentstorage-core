@@ -24,6 +24,8 @@ window.currentLanguageCode = null;
  * Loads and sets the content for a specific language.
  * It will internally ensure the application configuration (for contentDir) is loaded.
  * @param contentJson
+ * Language code which is used for live editor to manage pending changes
+ * @param languageCode
  */
 export function setContentLanguage({
   languageCode,
@@ -195,12 +197,10 @@ export function getImage(
     const key = `https://di0fmnnsdfsl2.cloudfront.net/${currentData.url}`;
 
     if (window.parent && window.parent !== window) {
-
       const existingEntry = window.memoryMap.get(key);
 
       const idSet = existingEntry ? existingEntry.ids : new Set<string>();
       idSet.add(contentKey); // Add the current ID to the set.
-
 
       window.memoryMap.set(key, {
         ids: idSet,

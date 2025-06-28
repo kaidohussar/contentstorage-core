@@ -39,7 +39,10 @@ export async function fetchContent(language?: LanguageCode) {
 
     console.log(`Received JSON for ${languageToFetch}`);
 
-    setContentLanguage(jsonData);
+    setContentLanguage({
+      languageCode: languageToFetch,
+      contentJson: jsonData,
+    });
   } catch (error: any) {
     // Catch errors related to fetching or saving a single language file
     console.error(
