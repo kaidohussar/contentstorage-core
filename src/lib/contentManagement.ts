@@ -192,24 +192,28 @@ export function getImage(
     typeof current.url === 'string'
   ) {
     const currentData = current as ImageObject;
+    const key = `https://di0fmnnsdfsl2.cloudfront.net/${currentData.url}`;
 
     if (window.parent && window.parent !== window) {
-      const key = currentData.url;
 
       const existingEntry = window.memoryMap.get(key);
 
       const idSet = existingEntry ? existingEntry.ids : new Set<string>();
       idSet.add(contentKey); // Add the current ID to the set.
 
+
       window.memoryMap.set(key, {
         ids: idSet,
         type: 'image',
       });
     }
-
+    console.log('currentData.url', currentData.url);
     return {
       contentKey,
-      data: currentData,
+      data: {
+        ...currentData,
+        url: key,
+      },
     };
   } else {
     const msg = `[Contentstorage] getImage: Value at path "${contentKey}" is not a valid image object (actual value: ${JSON.stringify(current)}).`;
