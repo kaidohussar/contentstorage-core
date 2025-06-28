@@ -1,6 +1,16 @@
+import { LanguageCode } from './types.js';
+
 declare global {
   interface Window {
-    memoryMap: Map<string, { ids: Set<string>; type: 'text' | 'image' }>;
+    memoryMap: Map<
+      string,
+      {
+        ids: Set<string>;
+        type: 'text' | 'image' | 'variation';
+        variation?: string;
+      }
+    >;
+    currentLanguageCode: LanguageCode | null;
   }
 }
 

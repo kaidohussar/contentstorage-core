@@ -5,6 +5,7 @@ import {
   GetTextReturn,
   GetVariationReturn,
   ImageObject,
+  LanguageCode,
   VariationObject,
 } from '../types.js';
 import { populateTextWithVariables } from '../helpers/populateTextWithVariables.js';
@@ -17,24 +18,37 @@ export let appConfig: Pick<AppConfig, 'contentKey' | 'languageCodes'> | null =
  * NB! Only used when live editor mode is on
  */
 window.memoryMap = new Map();
+window.currentLanguageCode = null;
 
 /**
  * Loads and sets the content for a specific language.
  * It will internally ensure the application configuration (for contentDir) is loaded.
  * @param contentJson
  */
-export function setContentLanguage(contentJson: object) {
+export function setContentLanguage({
+  languageCode,
+  contentJson,
+}: {
+  languageCode: LanguageCode;
+  contentJson: object;
+}) {
   if (!contentJson || typeof contentJson !== 'object') {
     throw new Error(
-      '[Contentstorage] Invalid contentKey might be provided which caused setContentLanguage to fail.'
+      '[Contentstorage] Invalid contentJson might be provided which caused setContentLanguage to fail.'
     );
   }
 
   try {
     activeContent = contentJson; // Relies on augmentation
+
+    if (typeof window !== 'undefined') {
+      window.currentLanguageCode = languageCode;
+    }
+
     console.log(`[Contentstorage] Content loaded.`);
   } catch (error) {
     activeContent = null; // Reset on failure
+    window.currentLanguageCode = null;
     console.error(
       `[Contentstorage] Failed to load content. Error: ${(error as Error).message}`
     );
@@ -252,6 +266,21 @@ export function getVariation<Path extends keyof ContentStructure>(
       if (typeof variationObject.data[variationKey] === 'string') {
         const current = variationObject.data[variationKey];
 
+        if (window.parent && window.parent !== window) {
+          const key = current;
+
+          const existingEntry = window.memoryMap.get(key);
+
+          const idSet = existingEntry ? existingEntry.ids : new Set<string>();
+          idSet.add(contentKey); // Add the current ID to the set.
+
+          window.memoryMap.set(key, {
+            ids: idSet,
+            type: 'variation',
+            variation: variationKey,
+          });
+        }
+
         if (!variables || Object.keys(variables).length === 0) {
           return {
             contentKey,
@@ -277,6 +306,22 @@ export function getVariation<Path extends keyof ContentStructure>(
             `[Contentstorage] getVariation: Variation key "${variationKey}" not found at path "${contentKey}". Returning 'default' variation.`
           );
         }
+
+        if (window.parent && window.parent !== window) {
+          const key = current;
+
+          const existingEntry = window.memoryMap.get(key);
+
+          const idSet = existingEntry ? existingEntry.ids : new Set<string>();
+          idSet.add(contentKey); // Add the current ID to the set.
+
+          window.memoryMap.set(key, {
+            ids: idSet,
+            type: 'variation',
+            variation: 'default',
+          });
+        }
+
         return {
           contentKey,
           text: variationObject.data.default,
