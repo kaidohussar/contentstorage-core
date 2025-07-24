@@ -95,30 +95,30 @@ export function initContentStorage(
  * @returns The text string from the JSON, or the fallbackValue, or undefined.
  */
 export function getText<Path extends keyof ContentStructure>(
-  contentKey: Path,
+  contentId: Path,
   variables?: ContentStructure[Path] extends { variables: infer Vars }
     ? keyof Vars
     : Record<string, any>
 ): GetTextReturn {
   const defaultVal: GetTextReturn = {
-    contentKey,
+    contentId,
     text: '',
   };
 
   if (!activeContent) {
-    const msg = `[Contentstorage] getText: Content not loaded (Key: "${String(contentKey)}"). Ensure setContentLanguage() was called and completed successfully.`;
+    const msg = `[Contentstorage] getText: Content not loaded (Key: "${String(contentId)}"). Ensure setContentLanguage() was called and completed successfully.`;
     console.warn(msg);
     return defaultVal;
   }
 
-  const keys = (contentKey as string).split('.');
+  const keys = (contentId as string).split('.');
   let current: any = activeContent;
 
   for (const key of keys) {
     if (current && typeof current === 'object' && key in current) {
       current = current[key];
     } else {
-      const msg = `[Contentstorage] getText: Path "${String(contentKey)}" not found in loaded content.`;
+      const msg = `[Contentstorage] getText: Path "${String(contentId)}" not found in loaded content.`;
       console.warn(msg);
       return defaultVal;
     }
@@ -131,7 +131,7 @@ export function getText<Path extends keyof ContentStructure>(
       const existingEntry = window.memoryMap.get(key);
 
       const idSet = existingEntry ? existingEntry.ids : new Set<string>();
-      idSet.add(contentKey); // Add the current ID to the set.
+      idSet.add(contentId); // Add the current ID to the set.
 
       window.memoryMap.set(key, {
         ids: idSet,
@@ -141,47 +141,47 @@ export function getText<Path extends keyof ContentStructure>(
 
     if (!variables || Object.keys(variables).length === 0) {
       return {
-        contentKey,
+        contentId,
         text: current,
       };
     }
 
     return {
-      contentKey,
-      text: populateTextWithVariables(current, variables, contentKey),
+      contentId,
+      text: populateTextWithVariables(current, variables, contentId),
     };
   } else {
-    const msg = `[Contentstorage] getText: Value at path "${String(contentKey)}" is not a string (actual type: ${typeof current}).`;
+    const msg = `[Contentstorage] getText: Value at path "${String(contentId)}" is not a string (actual type: ${typeof current}).`;
     console.warn(msg);
     return defaultVal;
   }
 }
 
 export function getImage(
-  contentKey: keyof ContentStructure
+  contentId: keyof ContentStructure
 ): GetImageReturn | undefined {
   const defaultVal = {
-    contentKey,
+    contentId,
     data: { url: '', altText: '', contentstorage_type: 'image' },
   } as const;
 
   if (!activeContent) {
-    const msg = `[Contentstorage] getImage: Content not loaded (Key: "${contentKey}"). Ensure setContentLanguage() was called and completed successfully.`;
+    const msg = `[Contentstorage] getImage: Content not loaded (Content Id: "${contentId}"). Ensure setContentLanguage() was called and completed successfully.`;
     console.warn(msg);
     return {
-      contentKey,
+      contentId,
       data: { url: '', altText: '', contentstorage_type: 'image' },
     };
   }
 
-  const keys = (contentKey as string).split('.');
+  const keys = (contentId as string).split('.');
   let current: any = activeContent;
 
   for (const key of keys) {
     if (current && typeof current === 'object' && key in current) {
       current = current[key];
     } else {
-      const msg = `[Contentstorage] getImage: Path "${contentKey}" not found in loaded content.`;
+      const msg = `[Contentstorage] getImage: Path "${contentId}" not found in loaded content.`;
       console.warn(msg);
       return defaultVal;
     }
@@ -200,7 +200,7 @@ export function getImage(
       const existingEntry = window.memoryMap.get(key);
 
       const idSet = existingEntry ? existingEntry.ids : new Set<string>();
-      idSet.add(contentKey); // Add the current ID to the set.
+      idSet.add(contentId); // Add the current ID to the set.
 
       window.memoryMap.set(key, {
         ids: idSet,
@@ -209,45 +209,45 @@ export function getImage(
     }
     console.log('currentData.url', currentData.url);
     return {
-      contentKey,
+      contentId,
       data: {
         ...currentData,
         url: key,
       },
     };
   } else {
-    const msg = `[Contentstorage] getImage: Value at path "${contentKey}" is not a valid image object (actual value: ${JSON.stringify(current)}).`;
+    const msg = `[Contentstorage] getImage: Value at path "${contentId}" is not a valid image object (actual value: ${JSON.stringify(current)}).`;
     console.warn(msg);
     return defaultVal;
   }
 }
 
 export function getVariation<Path extends keyof ContentStructure>(
-  contentKey: Path,
+  contentId: Path,
   variationKey?: ContentStructure[Path] extends { data: infer D }
     ? keyof D
     : string,
   variables?: Record<string, any>
 ): GetVariationReturn {
   const defaultVal: GetVariationReturn = {
-    contentKey,
+    contentId,
     text: '',
   };
 
   if (!activeContent) {
-    const msg = `[Contentstorage] getVariation: Content not loaded (Key: "${contentKey}", Variation: "${variationKey?.toString()}"). Ensure setContentLanguage() was called and completed successfully.`;
+    const msg = `[Contentstorage] getVariation: Content not loaded (Content Id: "${contentId}", Variation: "${variationKey?.toString()}"). Ensure setContentLanguage() was called and completed successfully.`;
     console.warn(msg);
     return defaultVal;
   }
 
-  const keys = (contentKey as string).split('.');
+  const keys = (contentId as string).split('.');
   let current: any = activeContent;
 
   for (const key of keys) {
     if (current && typeof current === 'object' && key in current) {
       current = current[key];
     } else {
-      const msg = `[Contentstorage] getVariation: Path "${contentKey}" for variation object not found in loaded content.`;
+      const msg = `[Contentstorage] getVariation: Path "${contentId}" for variation object not found in loaded content.`;
       console.warn(msg);
       return defaultVal;
     }
@@ -276,7 +276,7 @@ export function getVariation<Path extends keyof ContentStructure>(
           const existingEntry = window.memoryMap.get(key);
 
           const idSet = existingEntry ? existingEntry.ids : new Set<string>();
-          idSet.add(contentKey); // Add the current ID to the set.
+          idSet.add(contentId); // Add the current ID to the set.
 
           window.memoryMap.set(key, {
             ids: idSet,
@@ -287,17 +287,17 @@ export function getVariation<Path extends keyof ContentStructure>(
 
         if (!variables || Object.keys(variables).length === 0) {
           return {
-            contentKey,
+            contentId,
             text: current,
           };
         }
 
         return {
-          contentKey,
-          text: populateTextWithVariables(current, variables, contentKey),
+          contentId,
+          text: populateTextWithVariables(current, variables, contentId),
         };
       } else {
-        const msg = `[Contentstorage] getVariation: Variation value for key "${variationKey}" at path "${contentKey}" is not a string (actual type: ${typeof variationObject.data[variationKey]}).`;
+        const msg = `[Contentstorage] getVariation: Variation value for key "${variationKey}" at path "${contentId}" is not a string (actual type: ${typeof variationObject.data[variationKey]}).`;
         console.warn(msg);
       }
     }
@@ -307,7 +307,7 @@ export function getVariation<Path extends keyof ContentStructure>(
       if (typeof variationObject.data.default === 'string') {
         if (variationKey && variationKey !== 'default') {
           console.warn(
-            `[Contentstorage] getVariation: Variation key "${variationKey}" not found at path "${contentKey}". Returning 'default' variation.`
+            `[Contentstorage] getVariation: Variation key "${variationKey}" not found at path "${contentId}". Returning 'default' variation.`
           );
         }
 
@@ -317,7 +317,7 @@ export function getVariation<Path extends keyof ContentStructure>(
           const existingEntry = window.memoryMap.get(key);
 
           const idSet = existingEntry ? existingEntry.ids : new Set<string>();
-          idSet.add(contentKey); // Add the current ID to the set.
+          idSet.add(contentId); // Add the current ID to the set.
 
           window.memoryMap.set(key, {
             ids: idSet,
@@ -327,24 +327,24 @@ export function getVariation<Path extends keyof ContentStructure>(
         }
 
         return {
-          contentKey,
+          contentId,
           text: variationObject.data.default,
         };
       } else {
         console.warn(
-          `[Contentstorage] getVariation: 'default' variation value at path "${contentKey}" is not a string (actual type: ${typeof variationObject.data.default}).`
+          `[Contentstorage] getVariation: 'default' variation value at path "${contentId}" is not a string (actual type: ${typeof variationObject.data.default}).`
         );
       }
     }
 
     // If neither specific key nor 'default' is found or valid
     console.warn(
-      `[Contentstorage] getVariation: Neither variation key "${variationKey?.toString()}" nor 'default' variation found or valid at path "${contentKey}".`
+      `[Contentstorage] getVariation: Neither variation key "${variationKey?.toString()}" nor 'default' variation found or valid at path "${contentId}".`
     );
     return defaultVal;
   } else {
     console.warn(
-      `[Contentstorage] getVariation: Value at path "${contentKey}" is not a valid variation object (actual value: ${JSON.stringify(current)}).`
+      `[Contentstorage] getVariation: Value at path "${contentId}" is not a valid variation object (actual value: ${JSON.stringify(current)}).`
     );
     return defaultVal;
   }

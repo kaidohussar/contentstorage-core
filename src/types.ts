@@ -63,17 +63,17 @@ export interface ContentStructure {
 }
 
 export type GetTextReturn = {
-  contentKey: string;
+  contentId: string;
   text: string;
 };
 
 export type GetImageReturn = {
-  contentKey: string;
+  contentId: string;
   data: ImageObject;
 };
 
 export type GetVariationReturn = {
-  contentKey: string;
+  contentId: string;
   text: string;
 };
 
