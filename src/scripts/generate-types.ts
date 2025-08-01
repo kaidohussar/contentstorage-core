@@ -15,12 +15,14 @@ export async function generateTypes() {
   console.log(chalk.blue('Starting type generation...'));
 
   const args = process.argv.slice(2);
-  const cliConfig: { [key:string]: any } = {};
-  args.forEach(arg => {
+  const cliConfig: { [key: string]: any } = {};
+  args.forEach((arg) => {
     if (arg.startsWith('--')) {
       const [key, value] = arg.substring(2).split('=');
       if (key && value) {
-        const sanitizedValue = value.replace(/^"(.*)"$/, '$1').replace(/^'(.*)'$/, '$1');
+        const sanitizedValue = value
+          .replace(/^"(.*)"$/, '$1')
+          .replace(/^'(.*)'$/, '$1');
         if (key === 'lang') {
           cliConfig.languageCodes = [sanitizedValue];
         } else if (key === 'content-key') {
@@ -35,7 +37,7 @@ export async function generateTypes() {
   let fileConfig = {};
   try {
     fileConfig = await loadConfig();
-  } catch (error) {
+  } catch {
     console.log(
       chalk.yellow(
         'Could not load a configuration file. Proceeding with CLI arguments.'
