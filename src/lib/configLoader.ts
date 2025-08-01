@@ -40,19 +40,9 @@ export async function loadConfig(): Promise<AppConfig> {
     ...userConfig,
   };
 
-  // Validate required fields
-  if (!mergedConfig.contentKey) {
-    console.error(
-      chalk.red(
-        'Error: Configuration is missing the required "contentKey" property.'
-      )
-    );
-    process.exit(1);
-  }
-
   const finalConfig: AppConfig = {
     languageCodes: mergedConfig.languageCodes || [],
-    contentKey: mergedConfig.contentKey,
+    contentKey: mergedConfig.contentKey || '',
     contentDir: path.resolve(process.cwd(), mergedConfig.contentDir!),
     typesOutputFile: path.resolve(process.cwd(), mergedConfig.typesOutputFile!),
   };

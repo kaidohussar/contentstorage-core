@@ -13,6 +13,16 @@ export async function pullContent() {
   // Load configuration (assuming this function is defined elsewhere and works)
   const config = await loadConfig();
 
+  // Validate required fields
+  if (!config.contentKey) {
+    console.error(
+      chalk.red(
+        'Error: Configuration is missing the required "contentKey" property.'
+      )
+    );
+    process.exit(1);
+  }
+
   console.log(chalk.blue(`Content key: ${config.contentKey}`));
   console.log(chalk.blue(`Saving content to: ${config.contentDir}`));
 
