@@ -9,31 +9,40 @@ import { loadConfig } from '../lib/configLoader.js';
 import { flattenJson } from '../helpers/flattenJson.js';
 import { CONTENTSTORAGE_CONFIG } from '../contentstorage-config.js';
 import { jsonToTS } from '../type-generation/index.js';
+import { AppConfig } from '../types.js';
 
 export async function generateTypes() {
   console.log(chalk.blue('Starting type generation...'));
 
   const args = process.argv.slice(2);
-  const cliConfig: { [key: string]: any } = {};
-  for (let i = 0; i < args.length; i++) {
-    if (args[i].startsWith('--')) {
-      const key = args[i].substring(2);
-      const value = args[i + 1];
-      if (value && !value.startsWith('--')) {
+  const cliConfig: { [key:string]: any } = {};
+  args.forEach(arg => {
+    if (arg.startsWith('--')) {
+      const [key, value] = arg.substring(2).split('=');
+      if (key && value) {
+        const sanitizedValue = value.replace(/^"(.*)"$/, '$1').replace(/^'(.*)'$/, '$1');
         if (key === 'lang') {
-          cliConfig.languageCodes = [value];
+          cliConfig.languageCodes = [sanitizedValue];
         } else if (key === 'content-key') {
-          cliConfig.contentKey = value;
+          cliConfig.contentKey = sanitizedValue;
         } else if (key === 'output') {
-          cliConfig.typesOutputFile = value;
+          cliConfig.typesOutputFile = sanitizedValue;
         }
-        i++; // Move to the next argument
       }
     }
-  }
+  });
 
-  const fileConfig = await loadConfig();
-  const config = { ...fileConfig, ...cliConfig };
+  let fileConfig = {};
+  try {
+    fileConfig = await loadConfig();
+  } catch (error) {
+    console.log(
+      chalk.yellow(
+        'Could not load a configuration file. Proceeding with CLI arguments.'
+      )
+    );
+  }
+  const config = { ...fileConfig, ...cliConfig } as Partial<AppConfig>;
 
   if (!config.typesOutputFile) {
     console.error(
