@@ -30,9 +30,7 @@ export async function loadConfig(): Promise<AppConfig> {
       userConfig = {}; // Reset in case of partial load failure
     }
   } else {
-    console.log(
-      chalk.blue('No content.config.js found. Using default configuration.')
-    );
+    console.log(chalk.blue('No content.config.js found. Continuing.'));
   }
 
   const mergedConfig: Partial<AppConfig> = {

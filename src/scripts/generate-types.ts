@@ -16,23 +16,23 @@ export async function generateTypes() {
 
   const args = process.argv.slice(2);
   const cliConfig: { [key: string]: any } = {};
-  args.forEach((arg) => {
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
     if (arg.startsWith('--')) {
-      const [key, value] = arg.substring(2).split('=');
-      if (key && value) {
-        const sanitizedValue = value
-          .replace(/^"(.*)"$/, '$1')
-          .replace(/^'(.*)'$/, '$1');
+      const key = arg.substring(2);
+      const value = args[i + 1];
+      if (value && !value.startsWith('--')) {
         if (key === 'lang') {
-          cliConfig.languageCodes = [sanitizedValue];
+          cliConfig.languageCodes = [value.toUpperCase()];
         } else if (key === 'content-key') {
-          cliConfig.contentKey = sanitizedValue;
+          cliConfig.contentKey = value;
         } else if (key === 'output') {
-          cliConfig.typesOutputFile = sanitizedValue;
+          cliConfig.typesOutputFile = value;
         }
+        i++;
       }
     }
-  });
+  }
 
   let fileConfig = {};
   try {
