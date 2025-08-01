@@ -13,7 +13,27 @@ import { jsonToTS } from '../type-generation/index.js';
 export async function generateTypes() {
   console.log(chalk.blue('Starting type generation...'));
 
-  const config = await loadConfig();
+  const args = process.argv.slice(2);
+  const cliConfig: { [key: string]: any } = {};
+  for (let i = 0; i < args.length; i++) {
+    if (args[i].startsWith('--')) {
+      const key = args[i].substring(2);
+      const value = args[i + 1];
+      if (value && !value.startsWith('--')) {
+        if (key === 'lang') {
+          cliConfig.languageCodes = [value];
+        } else if (key === 'content-key') {
+          cliConfig.contentKey = value;
+        } else if (key === 'output') {
+          cliConfig.typesOutputFile = value;
+        }
+        i++; // Move to the next argument
+      }
+    }
+  }
+
+  const fileConfig = await loadConfig();
+  const config = { ...fileConfig, ...cliConfig };
 
   if (!config.typesOutputFile) {
     console.error(
