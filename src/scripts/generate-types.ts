@@ -15,8 +15,6 @@ export async function generateTypes() {
   console.log(chalk.blue('Starting type generation...'));
 
   const args = process.argv.slice(2);
-  console.log('Received arguments:', args);
-
   const cliConfig: { [key: string]: any } = {};
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
@@ -31,11 +29,11 @@ export async function generateTypes() {
         } else if (key === 'output') {
           cliConfig.typesOutputFile = value;
         }
+        // Skip the value in the next iteration
         i++;
       }
     }
   }
-  console.log('Parsed CLI config:', cliConfig);
 
   let fileConfig = {};
   try {
@@ -48,7 +46,6 @@ export async function generateTypes() {
     );
   }
   const config = { ...fileConfig, ...cliConfig } as Partial<AppConfig>;
-  console.log('Final merged config:', config);
 
   if (!config.typesOutputFile) {
     console.error(

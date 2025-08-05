@@ -89,7 +89,7 @@ export function initContentStorage(
  * Autocompletion for pathString is enabled via module augmentation of CustomContentStructure.
  * `setContentLanguage()` must be called successfully before using this.
  *
- * @param contentKey A dot-notation path string (e.g., 'HomePage.Login'). Autocompletion is provided.
+ * @param contentId A dot-notation path string (e.g., 'HomePage.Login'). Autocompletion is provided.
  * @param variables Variables help to render dynamic content inside text strings
  * If not provided, and path is not found/value not string, undefined is returned.
  * @returns The text string from the JSON, or the fallbackValue, or undefined.
@@ -194,7 +194,7 @@ export function getImage(
     typeof current.url === 'string'
   ) {
     const currentData = current as ImageObject;
-    const key = `https://di0fmnnsdfsl2.cloudfront.net/${currentData.url}`;
+    const key = `https://cdn.contentstorage.app/${currentData.url}`;
 
     if (window.parent && window.parent !== window) {
       const existingEntry = window.memoryMap.get(key);
