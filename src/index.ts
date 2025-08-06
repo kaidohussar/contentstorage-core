@@ -45,7 +45,7 @@ isLiveEditorMode().then(async (isLiveMode) => {
 
   isInContentstorageIframe = true;
 
-  const cdnScriptUrl = `https://your-cdn-domain.com/contentstorage-live-editor.js?contentstorage-live-editor=true`;
+  const cdnScriptUrl = `https://cdn.contentstorage.app/live-editor.js?contentstorage-live-editor=true`;
 
   return new Promise((resolve, reject) => {
     console.log(`Attempting to load script from: ${cdnScriptUrl}`);
