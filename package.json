@@ -2,7 +2,7 @@
   "name": "@contentstorage/core",
   "author": "Kaido Hussar <kaidohus@gmail.com>",
   "homepage": "https://contentstorage.app",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "module",
   "description": "Fetch content from contentstorage and generate TypeScript types",
   "module": "dist/index.js",
