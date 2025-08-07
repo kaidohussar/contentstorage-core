@@ -18,9 +18,10 @@ export {
   getText,
   getImage,
   getVariation,
+  liveEditorReady,
 };
 
-export let isInContentstorageIframe = false;
+let liveEditorReadyPromise: Promise<boolean> | null = null;
 
 async function isLiveEditorMode() {
   try {
@@ -29,54 +30,67 @@ async function isLiveEditorMode() {
     const iframeMarkerFromParent = urlParams.get('contentstorage_live_editor');
     return !!(inIframe && iframeMarkerFromParent);
   } catch (e) {
-    // This catch block is for rare edge cases or highly sandboxed environments
-    // where accessing window.top might throw an error.
-    // If an error occurs, it's safer to assume it might be in an iframe.
-    console.warn('Error accessing window.top, assuming iframe context:', e);
+    console.warn('Error accessing window.top:', e);
     return false;
   }
 }
 
-isLiveEditorMode().then(async (isLiveMode) => {
-  console.log('isLiveMode', isLiveMode);
-  if (!isLiveMode) {
-    return;
+function liveEditorReady(retries = 2, delay = 3000): Promise<boolean> {
+  if (liveEditorReadyPromise) {
+    return liveEditorReadyPromise;
   }
 
-  isInContentstorageIframe = true;
+  liveEditorReadyPromise = new Promise(async (resolve) => {
+    const isLiveMode = await isLiveEditorMode();
+    if (!isLiveMode) {
+      resolve(false);
+      return;
+    }
 
-  const cdnScriptUrl = `https://cdn.contentstorage.app/live-editor.js?contentstorage-live-editor=true`;
+    const cdnScriptUrl = `https://cdn.contentstorage.app/live-editor.js?contentstorage-live-editor=true`;
 
-  return new Promise((resolve, reject) => {
-    console.log(`Attempting to load script from: ${cdnScriptUrl}`);
+    const loadScript = (attempt = 1) => {
+      console.log(
+        `Attempting to load Contentstorage live editor script (attempt ${attempt}/${retries})`
+      );
 
-    // 1. Create a new <script> element
-    const scriptElement = document.createElement('script');
-    scriptElement.type = 'text/javascript';
+      const scriptElement = document.createElement('script');
+      scriptElement.type = 'text/javascript';
+      scriptElement.src = cdnScriptUrl;
 
-    // 2. Set the src attribute to your script's URL
-    // The browser will fetch and execute it.
-    scriptElement.src = cdnScriptUrl;
+      scriptElement.onload = () => {
+        console.log(`Script loaded successfully from: ${cdnScriptUrl}`);
+        resolve(true);
+      };
 
-    // 3. Handle successful loading
-    scriptElement.onload = () => {
-      console.log(`Script loaded successfully from: ${cdnScriptUrl}`);
-      // The script has been fetched and executed by the browser.
-      // If it's an IIFE, it has already run.
-      resolve(true); // Resolve the promise indicating success
+      scriptElement.onerror = (error) => {
+        // Clean up the failed script element to avoid clutter
+        scriptElement.remove();
+        console.error(
+          `Failed to load script (attempt ${attempt}/${retries})`,
+          error
+        );
+        if (attempt < retries) {
+          setTimeout(() => loadScript(attempt + 1), delay);
+        } else {
+          console.error(`All ${retries} attempts to load the script failed.`);
+          resolve(false);
+        }
+      };
+
+      document.head.appendChild(scriptElement);
     };
 
-    // 4. Handle errors during loading (e.g., network error, 404)
-    scriptElement.onerror = (error) => {
-      console.error(`Failed to load script from: ${cdnScriptUrl}`, error);
-      reject(new Error(`Failed to load script: ${cdnScriptUrl}`)); // Reject the promise
-    };
-
-    // 5. Append the script element to the document's head (or body)
-    // This triggers the browser to start loading the script.
-    document.head.appendChild(scriptElement);
-    // Or: document.body.appendChild(scriptElement);
+    loadScript();
   });
 
-  // fetch script to handle iframe communication
-});
+  return liveEditorReadyPromise;
+}
+
+if (typeof window !== 'undefined') {
+  liveEditorReady().then((result) => {
+    if (result === true) {
+      console.log('Contentstorage live editor script loaded!');
+    }
+  });
+}
