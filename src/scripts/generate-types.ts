@@ -142,19 +142,19 @@ export async function generateTypes() {
       if (!config.contentKey) {
         throw new Error('Cannot generate types: contentKey is missing');
       }
-      
+
       let fileUrl: string;
-      let requestConfig: any = { responseType: 'json' };
-      
+      const requestConfig: any = { responseType: 'json' };
+
       if (config.pendingChanges) {
         fileUrl = `${CONTENTSTORAGE_CONFIG.API_URL}/pending-changes/get-json?languageCode=${firstLanguageCode}`;
         requestConfig.headers = {
-          'X-Content-Key': config.contentKey
+          'X-Content-Key': config.contentKey,
         };
       } else {
         fileUrl = `${CONTENTSTORAGE_CONFIG.BASE_URL}/${config.contentKey}/content/${firstLanguageCode}.json`;
       }
-      
+
       dataSourceDescription = `remote URL (${fileUrl})`;
 
       console.log(chalk.blue(`Attempting to fetch JSON from: ${fileUrl}`));

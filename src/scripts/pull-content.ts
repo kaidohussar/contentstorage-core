@@ -92,7 +92,7 @@ export async function pullContent() {
     // Process each language code
     for (const languageCode of config.languageCodes) {
       let fileUrl: string;
-      let requestConfig: any = {};
+      const requestConfig: any = {};
       
       if (config.pendingChanges) {
         fileUrl = `${CONTENTSTORAGE_CONFIG.API_URL}/pending-changes/get-json?languageCode=${languageCode}`;
