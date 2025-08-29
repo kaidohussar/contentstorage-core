@@ -6,18 +6,60 @@ import path from 'path';
 import chalk from 'chalk';
 import { loadConfig } from '../lib/configLoader.js';
 import { CONTENTSTORAGE_CONFIG } from '../contentstorage-config.js';
+import { AppConfig } from '../types.js';
 
 export async function pullContent() {
   console.log(chalk.blue('Starting content pull...'));
 
-  // Load configuration (assuming this function is defined elsewhere and works)
-  const config = await loadConfig();
+  const args = process.argv.slice(2);
+  const cliConfig: { [key: string]: any } = {};
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (arg.startsWith('--')) {
+      const key = arg.substring(2);
+      const value = args[i + 1];
+      if (key === 'pending-changes') {
+        cliConfig.pendingChanges = true;
+      } else if (value && !value.startsWith('--')) {
+        if (key === 'lang') {
+          cliConfig.languageCodes = [value.toUpperCase()];
+        } else if (key === 'content-key') {
+          cliConfig.contentKey = value;
+        } else if (key === 'content-dir') {
+          cliConfig.contentDir = value;
+        }
+        // Skip the value in the next iteration
+        i++;
+      }
+    }
+  }
+
+  let fileConfig = {};
+  try {
+    fileConfig = await loadConfig();
+  } catch {
+    console.log(
+      chalk.yellow(
+        'Could not load a configuration file. Proceeding with CLI arguments.'
+      )
+    );
+  }
+  const config = { ...fileConfig, ...cliConfig } as Partial<AppConfig>;
 
   // Validate required fields
   if (!config.contentKey) {
     console.error(
       chalk.red(
         'Error: Configuration is missing the required "contentKey" property.'
+      )
+    );
+    process.exit(1);
+  }
+
+  if (!config.contentDir) {
+    console.error(
+      chalk.red(
+        'Error: Configuration is missing the required "contentDir" property.'
       )
     );
     process.exit(1);
@@ -49,7 +91,18 @@ export async function pullContent() {
 
     // Process each language code
     for (const languageCode of config.languageCodes) {
-      const fileUrl = `${CONTENTSTORAGE_CONFIG.BASE_URL}/${config.contentKey}/content/${languageCode}.json`;
+      let fileUrl: string;
+      let requestConfig: any = {};
+      
+      if (config.pendingChanges) {
+        fileUrl = `${CONTENTSTORAGE_CONFIG.API_URL}/pending-changes/get-json?languageCode=${languageCode}`;
+        requestConfig.headers = {
+          'X-Content-Key': config.contentKey
+        };
+      } else {
+        fileUrl = `${CONTENTSTORAGE_CONFIG.BASE_URL}/${config.contentKey}/content/${languageCode}.json`;
+      }
+
       const filename = `${languageCode}.json`;
       const outputPath = path.join(config.contentDir, filename);
 
@@ -62,7 +115,7 @@ export async function pullContent() {
 
       try {
         // Fetch data for the current language
-        const response = await axios.get(fileUrl);
+        const response = await axios.get(fileUrl, requestConfig);
         const jsonData = response.data;
 
         // Basic check for data existence, although axios usually throws for non-2xx responses

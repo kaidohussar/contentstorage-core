@@ -3,6 +3,7 @@ export type AppConfig = {
   contentKey: string;
   contentDir: string;
   typesOutputFile: string;
+  pendingChanges?: boolean;
 };
 
 export type LanguageCode =
@@ -45,14 +46,6 @@ export type LanguageCode =
  * consumers enable type-safe autocompletion for localization path strings
  * used with functions like `getText`.
  *
- * @example
- * // In consumer's project (e.g., in a .d.ts file):
- * import 'your-library-name'; // Your library's package name
- * import type { RootContentItem as AppSpecificRootItem } from './generated_content_types';
- *
- * declare module 'your-library-name' {
- * export interface ContentStructure extends AppSpecificRootItem {}
- * }
  */
 
 // eslint-disable-next-line

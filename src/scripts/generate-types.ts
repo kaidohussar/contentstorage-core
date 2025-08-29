@@ -21,7 +21,9 @@ export async function generateTypes() {
     if (arg.startsWith('--')) {
       const key = arg.substring(2);
       const value = args[i + 1];
-      if (value && !value.startsWith('--')) {
+      if (key === 'pending-changes') {
+        cliConfig.pendingChanges = true;
+      } else if (value && !value.startsWith('--')) {
         if (key === 'lang') {
           cliConfig.languageCodes = [value.toUpperCase()];
         } else if (key === 'content-key') {
@@ -140,12 +142,24 @@ export async function generateTypes() {
       if (!config.contentKey) {
         throw new Error('Cannot generate types: contentKey is missing');
       }
-      const fileUrl = `${CONTENTSTORAGE_CONFIG.BASE_URL}/${config.contentKey}/content/${firstLanguageCode}.json`; // Adjust URL construction if necessary
+      
+      let fileUrl: string;
+      let requestConfig: any = { responseType: 'json' };
+      
+      if (config.pendingChanges) {
+        fileUrl = `${CONTENTSTORAGE_CONFIG.API_URL}/pending-changes/get-json?languageCode=${firstLanguageCode}`;
+        requestConfig.headers = {
+          'X-Content-Key': config.contentKey
+        };
+      } else {
+        fileUrl = `${CONTENTSTORAGE_CONFIG.BASE_URL}/${config.contentKey}/content/${firstLanguageCode}.json`;
+      }
+      
       dataSourceDescription = `remote URL (${fileUrl})`;
 
       console.log(chalk.blue(`Attempting to fetch JSON from: ${fileUrl}`));
       try {
-        const response = await axios.get(fileUrl, { responseType: 'json' });
+        const response = await axios.get(fileUrl, requestConfig);
         const jsonResponse = response.data;
 
         console.log(chalk.blue('Flattening JSON for type generation'));

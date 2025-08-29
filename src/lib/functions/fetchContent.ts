@@ -3,8 +3,19 @@ import { CONTENTSTORAGE_CONFIG } from '../../contentstorage-config.js';
 import { LanguageCode } from '../../types.js';
 import { appConfig, setContentLanguage } from '../contentManagement.js';
 
-export async function fetchContent(language?: LanguageCode) {
+interface FetchContentOptions {
+  withPendingChanges?: boolean;
+  contentKey?: string;
+}
+
+export async function fetchContent(
+  language?: LanguageCode,
+  options: FetchContentOptions = {}
+) {
+  const { withPendingChanges, contentKey } = options;
   const languageToFetch = language || appConfig?.languageCodes?.[0];
+  const usePendingChangesToFetch =
+    withPendingChanges || appConfig?.pendingChanges;
 
   console.log(`Starting content fetch for language ${language}...`);
 
@@ -16,11 +27,27 @@ export async function fetchContent(language?: LanguageCode) {
     throw Error(`No app config found`);
   }
 
-  const fileUrl = `${CONTENTSTORAGE_CONFIG.BASE_URL}/${appConfig.contentKey}/content/${languageToFetch}.json`;
+  const effectiveContentKey = contentKey || appConfig.contentKey;
+
+  let fileUrl: string;
+  let requestConfig: any = {};
+
+  if (usePendingChangesToFetch) {
+    if (!effectiveContentKey) {
+      throw Error(`No contentKey found`);
+    }
+
+    fileUrl = `${CONTENTSTORAGE_CONFIG.API_URL}/pending-changes/get-json?languageCode=${languageToFetch}`;
+    requestConfig.headers = {
+      'X-Content-Key': effectiveContentKey,
+    };
+  } else {
+    fileUrl = `${CONTENTSTORAGE_CONFIG.BASE_URL}/${effectiveContentKey}/content/${languageToFetch}.json`;
+  }
 
   try {
     // Fetch data for the current language
-    const response = await axios.get(fileUrl);
+    const response = await axios.get(fileUrl, requestConfig);
     const jsonData = response.data;
 
     if (jsonData === undefined || jsonData === null) {

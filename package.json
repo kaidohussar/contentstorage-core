@@ -45,6 +45,9 @@
   "engines": {
     "node": ">=18.0.0"
   },
+  "sideEffects": [
+    "./dist/index.js"
+  ],
   "publishConfig": {
     "access": "public"
   },

@@ -1,4 +1,5 @@
 import { AppConfig, LanguageCode, ContentStructure } from './types.js';
+import { CONTENTSTORAGE_CONFIG } from './contentstorage-config.js';
 
 import {
   setContentLanguage,
@@ -47,7 +48,7 @@ function liveEditorReady(retries = 2, delay = 3000): Promise<boolean> {
       return;
     }
 
-    const cdnScriptUrl = `https://cdn.contentstorage.app/live-editor.js?contentstorage-live-editor=true`;
+    const cdnScriptUrl = `${CONTENTSTORAGE_CONFIG.BASE_URL}/live-editor.js?contentstorage-live-editor=true`;
 
     const loadScript = (attempt = 1) => {
       console.log(

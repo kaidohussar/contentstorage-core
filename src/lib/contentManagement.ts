@@ -11,8 +11,10 @@ import {
 import { populateTextWithVariables } from '../helpers/populateTextWithVariables.js';
 
 export let activeContent: object | null = null;
-export let appConfig: Pick<AppConfig, 'contentKey' | 'languageCodes'> | null =
-  null;
+export let appConfig: Pick<
+  AppConfig,
+  'contentKey' | 'languageCodes' | 'pendingChanges'
+> | null = null;
 
 /**
  * NB! Only used when live editor mode is on
