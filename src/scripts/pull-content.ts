@@ -116,7 +116,12 @@ export async function pullContent() {
       try {
         // Fetch data for the current language
         const response = await axios.get(fileUrl, requestConfig);
-        const jsonData = response.data;
+        let jsonData = response.data;
+
+        // Handle API response structure - only for pending changes API
+        if (config.pendingChanges && jsonData && typeof jsonData === 'object' && 'data' in jsonData) {
+          jsonData = jsonData.data;
+        }
 
         // Basic check for data existence, although axios usually throws for non-2xx responses
         if (jsonData === undefined || jsonData === null) {

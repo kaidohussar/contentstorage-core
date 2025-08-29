@@ -160,7 +160,12 @@ export async function generateTypes() {
       console.log(chalk.blue(`Attempting to fetch JSON from: ${fileUrl}`));
       try {
         const response = await axios.get(fileUrl, requestConfig);
-        const jsonResponse = response.data;
+        let jsonResponse = response.data;
+
+        // Handle API response structure - API returns { data: actualContent }
+        if (config.pendingChanges && jsonResponse && typeof jsonResponse === 'object' && 'data' in jsonResponse) {
+          jsonResponse = jsonResponse.data;
+        }
 
         console.log(chalk.blue('Flattening JSON for type generation'));
         jsonObject = flattenJson(jsonResponse);

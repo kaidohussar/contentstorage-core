@@ -48,7 +48,12 @@ export async function fetchContent(
   try {
     // Fetch data for the current language
     const response = await axios.get(fileUrl, requestConfig);
-    const jsonData = response.data;
+    let jsonData = response.data;
+
+    // Handle API response structure - only for pending changes API
+    if (usePendingChangesToFetch && jsonData && typeof jsonData === 'object' && 'data' in jsonData) {
+      jsonData = jsonData.data;
+    }
 
     if (jsonData === undefined || jsonData === null) {
       throw new Error(
