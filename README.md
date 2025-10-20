@@ -325,25 +325,6 @@ When running in an iframe with live editor parameters, the library automatically
 - Tracks content usage via `window.memoryMap`
 - Enables real-time content updates without page reload
 
-## Development
-
-```bash
-# Install dependencies
-npm install
-
-# Build
-npm run build
-
-# Lint
-npm run lint
-
-# Format code
-npm run prettier:write
-
-# Release
-npm run release
-```
-
 ## Requirements
 
 - Node.js >= 18.0.0
