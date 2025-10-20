@@ -8,8 +8,7 @@
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "pull-content": "dist/scripts/pull-content.js",
-    "generate-types": "dist/scripts/generate-types.js"
+    "contentstorage": "dist/scripts/cli.js"
   },
   "repository": {
     "type": "git",

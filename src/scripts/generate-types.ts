@@ -238,5 +238,3 @@ export async function generateTypes() {
     process.exit(1);
   }
 }
-
-generateTypes();
