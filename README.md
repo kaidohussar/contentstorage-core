@@ -12,7 +12,7 @@
 - **TypeScript First** - Automatic type generation from your content
 - **Type Safety** - Full autocompletion and type checking for content access
 - **Live Editor Integration** - Real-time content editing without page reload
-- **Special Content Types** - Support for text, images, and A/B test variations
+- **Special Content Types** - Support for text, images, and variations
 - **Variable Substitution** - Dynamic content with template variables
 - **CLI Tools** - Easy content management with professional CLI
 
