@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/kaidohussar/Desktop/Projects/contentstorage-core/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

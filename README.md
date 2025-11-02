@@ -1,31 +1,32 @@
 # @contentstorage/core
 
-> A key-value based CMS core library that fetches content from ContentStorage and generates TypeScript types
+> CLI tool for managing translations and generating TypeScript types from ContentStorage
 
 [![npm version](https://img.shields.io/npm/v/@contentstorage/core.svg)](https://www.npmjs.com/package/@contentstorage/core)
 [![License](https://img.shields.io/npm/l/@contentstorage/core.svg)](https://github.com/kaidohussar/contentstorage-core/blob/master/LICENSE)
 
+## Overview
+
+ContentStorage Core is a powerful CLI tool for managing translations and content. It pulls content from ContentStorage CDN, generates TypeScript types, and integrates seamlessly with popular i18n libraries.
+
 ## Features
 
-- **Key-Value Storage** - Organize content with hierarchical dot-notation paths
+- **Translation Management** - Pull content from ContentStorage CDN
+- **TypeScript Generation** - Automatic type generation from your content
 - **Multi-Language Support** - Built-in support for 40+ languages
-- **TypeScript First** - Automatic type generation from your content
-- **Type Safety** - Full autocompletion and type checking for content access
-- **Live Editor Integration** - Real-time content editing without page reload
-- **Special Content Types** - Support for text, images, and variations
-- **Variable Substitution** - Dynamic content with template variables
-- **CLI Tools** - Easy content management with professional CLI
+- **CLI Tools** - Professional command-line interface
+- **Plugin Ecosystem** - Integrate with i18next, react-intl, vue-i18n, and more
 
 ## Installation
 
 ```bash
-npm install @contentstorage/core
+npm install -D @contentstorage/core
 ```
 
 or
 
 ```bash
-yarn add @contentstorage/core
+yarn add -D @contentstorage/core
 ```
 
 ## Quick Start
@@ -53,30 +54,23 @@ npx contentstorage pull
 npx contentstorage generate-types
 ```
 
-### 3. Initialize and Use in Your App
+### 3. Use with Your i18n Library
 
-```typescript
-import { initContentStorage, fetchContent, getText, getImage } from '@contentstorage/core';
+**With i18next:**
+```bash
+npm install @contentstorage/plugin-i18next
+npx contentstorage-i18next export
+```
 
-// Initialize
-initContentStorage({
-  contentKey: 'your-content-key',
-  languageCodes: ['EN', 'FR', 'DE']
-});
+**With react-intl:**
+```bash
+npm install @contentstorage/plugin-react-intl
+npx contentstorage-react-intl export
+```
 
-// Fetch content for a language
-await fetchContent('EN');
-
-// Access content with full type safety
-const title = getText('HomePage.title');
-// → { contentId: 'HomePage.title', text: 'Welcome!' }
-
-const heroImage = getImage('HomePage.hero');
-// → { contentId: 'HomePage.hero', data: { url: '...', altText: '...' } }
-
-// Use variables in text
-const greeting = getText('HomePage.greeting', { name: 'John' });
-// → { contentId: 'HomePage.greeting', text: 'Hello John!' }
+**With ContentStorage SDK (for advanced features like variations and images):**
+```bash
+npm install @contentstorage/sdk
 ```
 
 ## CLI Commands
@@ -157,106 +151,47 @@ export default {
 
 ### Supported Languages
 
-The library supports 40+ languages including:
+The CLI supports 40+ languages including:
 EN, FR, DE, ES, IT, PT, NL, PL, RU, TR, SV, NO, DA, FI, CS, SK, HU, RO, BG, HR, SL, SR, and more.
 
-## API Reference
+## Integration Options
 
-### Initialization
+### Option 1: Use with i18n Libraries (Recommended for most projects)
 
-#### `initContentStorage(config)`
+For standard i18n needs, use ContentStorage CLI with popular i18n libraries:
 
-Initialize the content storage system.
+- **[@contentstorage/plugin-i18next](https://www.npmjs.com/package/@contentstorage/plugin-i18next)** - i18next integration
+- **[@contentstorage/plugin-react-intl](https://www.npmjs.com/package/@contentstorage/plugin-react-intl)** - react-intl (FormatJS) integration
+- **[@contentstorage/plugin-vue-i18n](https://www.npmjs.com/package/@contentstorage/plugin-vue-i18n)** - Vue i18n integration
 
-```typescript
-initContentStorage({
-  contentKey: string,
-  languageCodes: LanguageCode[]
-});
+### Option 2: Use with ContentStorage SDK (Advanced features)
+
+If you need advanced features like variations (A/B testing) and image management:
+
+```bash
+npm install @contentstorage/sdk
 ```
 
-#### `setContentLanguage(config)`
+See [@contentstorage/sdk](https://www.npmjs.com/package/@contentstorage/sdk) for documentation on:
+- Content variations (A/B testing)
+- Image management with CDN URLs
+- Live editor integration
+- Runtime content fetching
 
-Set content for a specific language.
+## TypeScript Support
 
-```typescript
-setContentLanguage({
-  languageCode: LanguageCode,
-  contentJson: object
-});
-```
-
-### Content Retrieval
-
-#### `getText<Path>(contentId, variables?)`
-
-Get localized text with optional variable substitution.
+After running `generate-types`, you get full TypeScript support:
 
 ```typescript
-const result = getText('HomePage.title');
-// → { contentId: 'HomePage.title', text: 'Welcome!' }
+// Generated types augment the ContentStructure interface
+import type { ContentStructure } from '@contentstorage/core';
 
-const greeting = getText('HomePage.greeting', { name: 'John', count: 5 });
-// → { contentId: 'HomePage.greeting', text: 'Hello John, you have 5 items' }
-```
-
-**Returns:** `{ contentId: string, text: string }`
-
-#### `getImage(contentId)`
-
-Get image content with CDN URL.
-
-```typescript
-const image = getImage('HomePage.hero');
-// → {
-//     contentId: 'HomePage.hero',
-//     data: {
-//       contentstorage_type: 'image',
-//       url: 'https://cdn.contentstorage.app/...',
-//       altText: 'Hero image'
-//     }
-//   }
-```
-
-**Returns:** `{ contentId: string, data: ImageObject } | undefined`
-
-#### `getVariation(contentId, variationKey?, variables?)`
-
-Get content variation for A/B testing.
-
-```typescript
-const cta = getVariation('HomePage.cta', 'mobile');
-// → { contentId: 'HomePage.cta', text: 'Tap Now' }
-
-// Defaults to 'default' variation if not specified
-const ctaDefault = getVariation('HomePage.cta');
-```
-
-**Returns:** `{ contentId: string, text: string }`
-
-### Content Fetching
-
-#### `fetchContent(languageCode)`
-
-Fetch content from ContentStorage CDN.
-
-```typescript
-await fetchContent('EN');
-```
-
-## TypeScript Integration
-
-The library uses interface augmentation for type-safe content access:
-
-```typescript
-// After running: npx contentstorage generate-types
-// The generated types augment the ContentStructure interface
-
-import { getText } from '@contentstorage/core';
+// Use with your i18n library
+import i18next from 'i18next';
 
 // TypeScript knows all available content paths
-const title = getText('HomePage.title'); // ✅ Autocomplete works
-const invalid = getText('Invalid.path'); // ❌ TypeScript error
+i18next.t('HomePage.title'); // ✅ Autocomplete works
+i18next.t('Invalid.path');   // ❌ TypeScript error
 ```
 
 ## Content Structure
@@ -268,28 +203,20 @@ Content is organized in a hierarchical key-value structure:
   "HomePage": {
     "title": "Welcome to Our App",
     "greeting": "Hello {name}, you have {count} items",
-    "hero": {
-      "contentstorage_type": "image",
-      "url": "hero.jpg",
-      "altText": "Hero image"
-    },
-    "cta": {
-      "contentstorage_type": "variation",
-      "data": {
-        "default": "Click Here",
-        "mobile": "Tap Now",
-        "desktop": "Click to Continue"
-      }
-    }
+    "description": "Get started with our platform"
+  },
+  "Navigation": {
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact"
   }
 }
 ```
 
 **Access with dot notation:**
-- `getText('HomePage.title')` → "Welcome to Our App"
-- `getText('HomePage.greeting', { name: 'John', count: 5 })` → "Hello John, you have 5 items"
-- `getImage('HomePage.hero')` → Image object with CDN URL
-- `getVariation('HomePage.cta', 'mobile')` → "Tap Now"
+- `HomePage.title` → "Welcome to Our App"
+- `HomePage.greeting` → "Hello {name}, you have {count} items"
+- `Navigation.home` → "Home"
 
 ## Package.json Scripts
 
@@ -314,16 +241,43 @@ npm run content:types   # Generate types
 npm run content:sync    # Pull and generate in one command
 ```
 
-## Integration with React
+## Workflow Example
 
-For React integration, use [@contentstorage/react](https://www.npmjs.com/package/@contentstorage/react) which builds on top of this core library and provides React-specific components and hooks.
+1. **Pull latest content:**
+   ```bash
+   npx contentstorage pull
+   ```
 
-## Live Editor Mode
+2. **Generate TypeScript types:**
+   ```bash
+   npx contentstorage generate-types
+   ```
 
-When running in an iframe with live editor parameters, the library automatically:
-- Loads the live editor script from CDN
-- Tracks content usage via `window.memoryMap`
-- Enables real-time content updates without page reload
+3. **Use in your app with i18next:**
+   ```typescript
+   import i18next from 'i18next';
+   import enContent from './content/json/EN.json';
+
+   i18next.init({
+     lng: 'EN',
+     resources: {
+       EN: { translation: enContent }
+     }
+   });
+
+   // Use translations
+   const title = i18next.t('HomePage.title');
+   ```
+
+## SDK Extract
+
+The `/sdk-extract` folder contains the ContentStorage SDK code ready to be moved to a separate repository. This SDK provides runtime features like:
+- getText/getImage/getVariation functions
+- Content variations (A/B testing)
+- Image management
+- Live editor integration
+
+To use the SDK, it will be published as `@contentstorage/sdk` in a separate package.
 
 ## Requirements
 

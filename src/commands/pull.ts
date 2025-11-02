@@ -4,8 +4,8 @@ import axios from 'axios';
 import fs from 'fs/promises';
 import path from 'path';
 import chalk from 'chalk';
-import { loadConfig } from '../lib/configLoader.js';
-import { CONTENTSTORAGE_CONFIG } from '../contentstorage-config.js';
+import { loadConfig } from '../core/config-loader.js';
+import { CONTENTSTORAGE_CONFIG } from '../utils/constants.js';
 import { AppConfig } from '../types.js';
 
 export async function pullContent() {

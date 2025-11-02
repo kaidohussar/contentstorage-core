@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import chalk from 'chalk';
-import { pullContent } from './pull-content.js';
+import { pullContent } from './pull.js';
 import { generateTypes } from './generate-types.js';
 
 const COMMANDS = {

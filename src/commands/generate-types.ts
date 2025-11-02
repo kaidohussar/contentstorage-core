@@ -5,9 +5,9 @@ import fs from 'fs/promises';
 import path from 'path';
 import axios from 'axios';
 import chalk from 'chalk'; // Optional: for colored output
-import { loadConfig } from '../lib/configLoader.js';
-import { flattenJson } from '../helpers/flattenJson.js';
-import { CONTENTSTORAGE_CONFIG } from '../contentstorage-config.js';
+import { loadConfig } from '../core/config-loader.js';
+import { flattenJson } from '../utils/flatten-json.js';
+import { CONTENTSTORAGE_CONFIG } from '../utils/constants.js';
 import { jsonToTS } from '../type-generation/index.js';
 import { AppConfig } from '../types.js';
 

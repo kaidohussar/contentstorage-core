@@ -1,15 +1,13 @@
 {
   "name": "@contentstorage/core",
-  "author": "Kaido Hussar <kaidohus@gmail.com>",
+  "author": "Kaido Hussar <kaido@contentstorage.app>",
   "homepage": "https://contentstorage.app",
-  "version": "1.2.1",
+  "version": "2.0.0",
   "type": "module",
-  "description": "Fetch content from contentstorage and generate TypeScript types",
+  "description": "ContentStorage CLI for managing translations and generating TypeScript types",
   "license": "MIT",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
   "bin": {
-    "contentstorage": "dist/scripts/cli.js"
+    "contentstorage": "dist/commands/cli.js"
   },
   "repository": {
     "type": "git",
@@ -26,9 +24,7 @@
   },
   "dependencies": {
     "axios": "^1.7.2",
-    "chalk": "^4.1.2",
-    "es7-shim": "^6.0.0",
-    "pluralize": "^3.1.0"
+    "chalk": "^4.1.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.26.0",
@@ -45,9 +41,6 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "sideEffects": [
-    "./dist/index.js"
-  ],
   "publishConfig": {
     "access": "public"
   },
