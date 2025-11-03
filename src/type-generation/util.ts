@@ -1,6 +1,5 @@
 import { KeyMetaData, TypeDescription, TypeGroup } from './model.js';
 
-
 export function isHash(str: string) {
   return str.length === 40;
 }
@@ -10,17 +9,17 @@ export function onlyUnique(value: any, index: any, self: any) {
 }
 
 export function isArray(x: any) {
-  return Object.prototype.toString.call(x) === "[object Array]";
+  return Object.prototype.toString.call(x) === '[object Array]';
 }
 
 export function isNonArrayUnion(typeName: string) {
   const arrayUnionRegex = /^\(.*\)\[\]$/;
 
-  return typeName.includes(" | ") && !arrayUnionRegex.test(typeName);
+  return typeName.includes(' | ') && !arrayUnionRegex.test(typeName);
 }
 
 export function isObject(x: any) {
-  return Object.prototype.toString.call(x) === "[object Object]" && x !== null;
+  return Object.prototype.toString.call(x) === '[object Object]' && x !== null;
 }
 
 export function isDate(x: any) {
@@ -28,17 +27,17 @@ export function isDate(x: any) {
 }
 
 export function parseKeyMetaData(key: string): KeyMetaData {
-  const isOptional = key.endsWith("--?");
+  const isOptional = key.endsWith('--?');
 
   if (isOptional) {
     return {
       isOptional,
-      keyValue: key.slice(0, -3)
+      keyValue: key.slice(0, -3),
     };
   } else {
     return {
       isOptional,
-      keyValue: key
+      keyValue: key,
     };
   }
 }
@@ -53,6 +52,9 @@ export function getTypeDescriptionGroup(desc: TypeDescription): TypeGroup {
   }
 }
 
-export function findTypeById(id: string, types: TypeDescription[]): TypeDescription {
-  return types.find(_ => _.id === id) as TypeDescription;
+export function findTypeById(
+  id: string,
+  types: TypeDescription[]
+): TypeDescription {
+  return types.find((_) => _.id === id) as TypeDescription;
 }

@@ -1,16 +1,25 @@
- 
 // @ts-expect-error
-import * as pluralize from "pluralize";
-import { NameEntry, NameStructure, TypeDescription, TypeGroup, TypeStructure } from './model.js';
-import { findTypeById, getTypeDescriptionGroup, isHash, parseKeyMetaData } from './util.js';
-
+import * as pluralize from 'pluralize';
+import {
+  NameEntry,
+  NameStructure,
+  TypeDescription,
+  TypeGroup,
+  TypeStructure,
+} from './model.js';
+import {
+  findTypeById,
+  getTypeDescriptionGroup,
+  isHash,
+  parseKeyMetaData,
+} from './util.js';
 
 function getName(
   { rootTypeId, types }: TypeStructure,
   keyName: string,
   names: NameEntry[],
   isInsideArray: boolean
-// @ts-ignore
+  // @ts-ignore
 ): NameStructure {
   const typeDesc = types.find((_) => _.id === rootTypeId) as any;
 
@@ -27,7 +36,13 @@ function getName(
         );
       });
       return {
-        rootName: getNameById(typeDesc.id, keyName, isInsideArray, types, names),
+        rootName: getNameById(
+          typeDesc.id,
+          keyName,
+          isInsideArray,
+          types,
+          names
+        ),
         names,
       };
 
@@ -36,7 +51,13 @@ function getName(
         getName({ rootTypeId: value as any, types }, key, names, false);
       });
       return {
-        rootName: getNameById(typeDesc.id, keyName, isInsideArray, types, names),
+        rootName: getNameById(
+          typeDesc.id,
+          keyName,
+          isInsideArray,
+          types,
+          names
+        ),
         names,
       };
 
@@ -49,7 +70,10 @@ function getName(
   }
 }
 
-export function getNames(typeStructure: TypeStructure, rootName: string = "RootObject"): NameEntry[] {
+export function getNames(
+  typeStructure: TypeStructure,
+  rootName: string = 'RootObject'
+): NameEntry[] {
   return getName(typeStructure, rootName, [], false).names.reverse();
 }
 
@@ -72,7 +96,9 @@ function getNameById(
 
   switch (group) {
     case TypeGroup.Array:
-      name = typeDesc.isUnion ? getArrayName(typeDesc, types, nameMap) : formatArrayName(typeDesc, types, nameMap);
+      name = typeDesc.isUnion
+        ? getArrayName(typeDesc, types, nameMap)
+        : formatArrayName(typeDesc, types, nameMap);
       break;
 
     case TypeGroup.Object:
@@ -105,9 +131,9 @@ function getNameById(
 function pascalCase(name: string) {
   return name
     .split(/\s+/g)
-    .filter((_) => _ !== "")
+    .filter((_) => _ !== '')
     .map(capitalize)
-    .reduce((a, b) => a + b, "");
+    .reduce((a, b) => a + b, '');
 }
 
 function capitalize(name: string) {
@@ -118,7 +144,7 @@ function normalizeInvalidTypeName(name: string): string {
   if (/^[a-zA-Z][a-zA-Z0-9]*$/.test(name)) {
     return name;
   } else {
-    const noSymbolsName = name.replace(/[^a-zA-Z0-9]/g, "");
+    const noSymbolsName = name.replace(/[^a-zA-Z0-9]/g, '');
     const startsWithWordCharacter = /^[a-zA-Z]/.test(noSymbolsName);
     return startsWithWordCharacter ? noSymbolsName : `_${noSymbolsName}`;
   }
@@ -133,22 +159,31 @@ function uniqueByIncrement(name: string, names: string[]): any {
   }
 }
 
-function getArrayName(typeDesc: TypeDescription, types: TypeDescription[], nameMap: NameEntry[]): string {
+function getArrayName(
+  typeDesc: TypeDescription,
+  types: TypeDescription[],
+  nameMap: NameEntry[]
+): string {
   // @ts-ignore
   if (typeDesc.arrayOfTypes.length === 0) {
-    return "any";
-  } else { // @ts-ignore
+    return 'any';
+  } else {
+    // @ts-ignore
     if (typeDesc.arrayOfTypes.length === 1) {
-        // @ts-ignore
+      // @ts-ignore
       const [idOrPrimitive] = typeDesc.arrayOfTypes;
-        return convertToReadableType(idOrPrimitive, types, nameMap);
-      } else {
-        return unionToString(typeDesc, types, nameMap);
-      }
+      return convertToReadableType(idOrPrimitive, types, nameMap);
+    } else {
+      return unionToString(typeDesc, types, nameMap);
+    }
   }
 }
 
-function convertToReadableType(idOrPrimitive: string, types: TypeDescription[], nameMap: NameEntry[]): string {
+function convertToReadableType(
+  idOrPrimitive: string,
+  types: TypeDescription[],
+  nameMap: NameEntry[]
+): string {
   return isHash(idOrPrimitive)
     ? // array keyName makes no difference in picking name for type
       // @ts-ignore
@@ -156,15 +191,23 @@ function convertToReadableType(idOrPrimitive: string, types: TypeDescription[], 
     : idOrPrimitive;
 }
 
-function unionToString(typeDesc: TypeDescription, types: TypeDescription[], nameMap: NameEntry[]): string {
+function unionToString(
+  typeDesc: TypeDescription,
+  types: TypeDescription[],
+  nameMap: NameEntry[]
+): string {
   // @ts-ignore
   return typeDesc.arrayOfTypes.reduce((acc, type, i) => {
     const readableTypeName = convertToReadableType(type, types, nameMap);
     return i === 0 ? readableTypeName : `${acc} | ${readableTypeName}`;
-  }, "");
+  }, '');
 }
 
-function formatArrayName(typeDesc: TypeDescription, types: TypeDescription[], nameMap: NameEntry[]): string {
+function formatArrayName(
+  typeDesc: TypeDescription,
+  types: TypeDescription[],
+  nameMap: NameEntry[]
+): string {
   // @ts-ignore
   const innerTypeId = typeDesc.arrayOfTypes[0];
   // const isMultipleTypeArray = findTypeById(innerTypeId, types).arrayOfTypes.length > 1

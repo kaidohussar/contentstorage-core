@@ -42,10 +42,12 @@ async function loadLanguageContent(
     const filePath = path.join(config.contentDir, `${languageCode}.json`);
     const content = await fs.readFile(filePath, 'utf-8');
     return JSON.parse(content);
-  } catch (error) {
+  } catch {
     // Fallback to API
     console.log(
-      chalk.dim(`  Local file not found for ${languageCode}, fetching from API...`)
+      chalk.dim(
+        `Local file not found for ${languageCode}, fetching from API...`
+      )
     );
 
     let fileUrl: string;
@@ -78,13 +80,9 @@ async function loadLanguageContent(
 
       return jsonData;
     } catch (apiError: any) {
-      console.error(
-        chalk.red(`Failed to load content for ${languageCode}:`)
-      );
+      console.error(chalk.red(`Failed to load content for ${languageCode}:`));
       if (apiError.response) {
-        console.error(
-          chalk.red(`  Status: ${apiError.response.status}`)
-        );
+        console.error(chalk.red(`  Status: ${apiError.response.status}`));
       }
       throw apiError;
     }
@@ -97,13 +95,13 @@ async function loadLanguageContent(
 function analyzeLanguage(
   languageCode: LanguageCode,
   content: Record<string, any>,
-  referenceContent: Record<string, any>,
-  isReference: boolean
+  referenceContent: Record<string, any>
 ): LanguageStats {
   const flatContent = flattenJson(content);
   const flatReference = flattenJson(referenceContent);
 
-  const untranslatedItems: Array<{ key: string; reason: 'empty' | 'missing' }> = [];
+  const untranslatedItems: Array<{ key: string; reason: 'empty' | 'missing' }> =
+    [];
 
   // Get all keys from reference
   const allKeys = Object.keys(flatReference);
@@ -147,17 +145,20 @@ function displayStats(result: StatsResult): void {
 
   // Reference language info
   console.log(
-    chalk.cyan(`\nReference Language: ${chalk.bold(result.referenceLanguage)} (baseline for comparison)`)
+    chalk.cyan(
+      `\nReference Language: ${chalk.bold(result.referenceLanguage)} (baseline for comparison)`
+    )
   );
-  console.log(chalk.cyan(`Total unique content items: ${chalk.bold(result.totalItems)}`));
+  console.log(
+    chalk.cyan(`Total unique content items: ${chalk.bold(result.totalItems)}`)
+  );
 
   // Language statistics table header
   console.log(chalk.bold('\n📋 Language Statistics:'));
   console.log(chalk.dim('─'.repeat(70)));
 
   // Table header
-  const headerFormat = (str: string, width: number) =>
-    str.padEnd(width, ' ');
+  const headerFormat = (str: string, width: number) => str.padEnd(width, ' ');
   console.log(
     chalk.bold(
       headerFormat('Language', 12) +
@@ -175,8 +176,8 @@ function displayStats(result: StatsResult): void {
       stats.completionPercentage === 100
         ? chalk.green
         : stats.completionPercentage >= 80
-        ? chalk.yellow
-        : chalk.red;
+          ? chalk.yellow
+          : chalk.red;
 
     const percentage = percentageColor(
       stats.completionPercentage.toFixed(1) + '%'
@@ -234,9 +235,7 @@ function displayStats(result: StatsResult): void {
       }
     }
   } else {
-    console.log(
-      chalk.green('\n✅ All languages are fully translated!')
-    );
+    console.log(chalk.green('\n✅ All languages are fully translated!'));
   }
 
   // Overall completion
@@ -247,8 +246,8 @@ function displayStats(result: StatsResult): void {
     result.overallCompletion === 100
       ? chalk.green
       : result.overallCompletion >= 80
-      ? chalk.yellow
-      : chalk.red;
+        ? chalk.yellow
+        : chalk.red;
 
   console.log(
     overallColor(
@@ -295,9 +294,11 @@ export async function showStats(): Promise<void> {
     let fileConfig = {};
     try {
       fileConfig = await loadConfig();
-    } catch (error) {
+    } catch {
       console.log(
-        chalk.yellow('⚠️  Could not load a configuration file, using CLI arguments only')
+        chalk.yellow(
+          '⚠️  Could not load a configuration file, using CLI arguments only'
+        )
       );
     }
 
@@ -331,14 +332,14 @@ export async function showStats(): Promise<void> {
     const fullConfig = config as AppConfig;
 
     console.log(
-      chalk.blue(
-        `Analyzing ${fullConfig.languageCodes.length} language(s)...`
-      )
+      chalk.blue(`Analyzing ${fullConfig.languageCodes.length} language(s)...`)
     );
 
     // Load content for all languages
-    const languageContents: Record<LanguageCode, Record<string, any>> =
-      {} as any;
+    const languageContents: Record<
+      LanguageCode,
+      Record<string, any>
+    > = {} as any;
 
     for (const languageCode of fullConfig.languageCodes) {
       try {
@@ -346,7 +347,7 @@ export async function showStats(): Promise<void> {
           languageCode,
           fullConfig
         );
-      } catch (error) {
+      } catch {
         console.error(
           chalk.red(`\n❌ Failed to load content for ${languageCode}`)
         );
@@ -367,8 +368,7 @@ export async function showStats(): Promise<void> {
       const stats = analyzeLanguage(
         languageCode,
         languageContents[languageCode],
-        referenceContent,
-        languageCode === referenceLanguage
+        referenceContent
       );
       languageStats.push(stats);
     }

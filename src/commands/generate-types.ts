@@ -163,7 +163,12 @@ export async function generateTypes() {
         let jsonResponse = response.data;
 
         // Handle API response structure - API returns { data: actualContent }
-        if (config.pendingChanges && jsonResponse && typeof jsonResponse === 'object' && 'data' in jsonResponse) {
+        if (
+          config.pendingChanges &&
+          jsonResponse &&
+          typeof jsonResponse === 'object' &&
+          'data' in jsonResponse
+        ) {
           jsonResponse = jsonResponse.data;
         }
 

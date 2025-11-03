@@ -93,11 +93,11 @@ export async function pullContent() {
     for (const languageCode of config.languageCodes) {
       let fileUrl: string;
       const requestConfig: any = {};
-      
+
       if (config.pendingChanges) {
         fileUrl = `${CONTENTSTORAGE_CONFIG.API_URL}/pending-changes/get-json?languageCode=${languageCode}`;
         requestConfig.headers = {
-          'X-Content-Key': config.contentKey
+          'X-Content-Key': config.contentKey,
         };
       } else {
         fileUrl = `${CONTENTSTORAGE_CONFIG.BASE_URL}/${config.contentKey}/content/${languageCode}.json`;
@@ -119,7 +119,12 @@ export async function pullContent() {
         let jsonData = response.data;
 
         // Handle API response structure - only for pending changes API
-        if (config.pendingChanges && jsonData && typeof jsonData === 'object' && 'data' in jsonData) {
+        if (
+          config.pendingChanges &&
+          jsonData &&
+          typeof jsonData === 'object' &&
+          'data' in jsonData
+        ) {
           jsonData = jsonData.data;
         }
 
