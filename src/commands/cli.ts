@@ -3,6 +3,7 @@
 import chalk from 'chalk';
 import { pullContent } from './pull.js';
 import { generateTypes } from './generate-types.js';
+import { showStats } from './stats.js';
 
 const COMMANDS = {
   pull: {
@@ -25,6 +26,16 @@ const COMMANDS = {
       '  --content-key <key>    Content key for your project',
       '  --lang <code>          Language code (e.g., EN, FR)',
       '  --pending-changes      Use pending/draft content',
+    ],
+  },
+  stats: {
+    name: 'stats',
+    description: 'Show translation completeness statistics',
+    usage: 'contentstorage stats [options]',
+    options: [
+      '  --content-key <key>    Content key for your project',
+      '  --content-dir <dir>    Directory with content files',
+      '  --pending-changes      Analyze pending/draft content',
     ],
   },
 };
@@ -103,6 +114,10 @@ async function main() {
 
     case 'generate-types':
       await generateTypes();
+      break;
+
+    case 'stats':
+      await showStats();
       break;
 
     default:

@@ -13,6 +13,7 @@ ContentStorage Core is a powerful CLI tool for managing translations and content
 
 - **Translation Management** - Pull content from ContentStorage CDN
 - **TypeScript Generation** - Automatic type generation from your content
+- **Translation Statistics** - Analyze translation completeness across languages
 - **Multi-Language Support** - Built-in support for 40+ languages
 - **CLI Tools** - Professional command-line interface
 - **Plugin Ecosystem** - Integrate with i18next, react-intl, vue-i18n, and more
@@ -116,6 +117,39 @@ npx contentstorage generate-types --output src/types.ts
 npx contentstorage generate-types --content-key abc123 --lang EN
 ```
 
+### `contentstorage stats`
+
+Show translation completeness statistics across all configured languages
+
+```bash
+npx contentstorage stats [options]
+```
+
+**Options:**
+- `--content-key <key>` - Content key for your project
+- `--content-dir <dir>` - Directory with content files
+- `--pending-changes` - Analyze pending/draft content
+
+**Examples:**
+```bash
+npx contentstorage stats
+npx contentstorage stats --content-key abc123
+npx contentstorage stats --pending-changes
+```
+
+**What it shows:**
+- Total number of content items per language
+- Number of translated vs untranslated items
+- Completion percentage for each language
+- Detailed list of untranslated item IDs grouped by language
+- Overall translation completion across all languages
+
+**What counts as "untranslated":**
+- Empty strings (`""`)
+- Keys that exist in the reference language but are missing in target languages
+
+The stats command uses the first language in your `languageCodes` array as the reference/baseline for comparison.
+
 ### `contentstorage --help`
 
 Show all available commands and options
@@ -124,6 +158,7 @@ Show all available commands and options
 npx contentstorage --help
 npx contentstorage pull --help
 npx contentstorage generate-types --help
+npx contentstorage stats --help
 ```
 
 ## Configuration
