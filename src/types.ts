@@ -4,6 +4,7 @@ export type AppConfig = {
   contentDir: string;
   typesOutputFile: string;
   pendingChanges?: boolean;
+  flatten?: boolean;
 };
 
 export type LanguageCode =

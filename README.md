@@ -1,17 +1,17 @@
 # @contentstorage/core
 
-> CLI tool for managing translations and generating TypeScript types from ContentStorage
+> CLI tool for managing translations and generating TypeScript types from Contentstorage
 
 [![npm version](https://img.shields.io/npm/v/@contentstorage/core.svg)](https://www.npmjs.com/package/@contentstorage/core)
 [![License](https://img.shields.io/npm/l/@contentstorage/core.svg)](https://github.com/kaidohussar/contentstorage-core/blob/master/LICENSE)
 
 ## Overview
 
-ContentStorage Core is a powerful CLI tool for managing translations and content. It pulls content from ContentStorage CDN, generates TypeScript types, and integrates seamlessly with popular i18n libraries.
+Contentstorage Core is a powerful CLI tool for managing translations and content. It pulls content from Contentstorage CDN, generates TypeScript types, and integrates seamlessly with popular i18n libraries.
 
 ## Features
 
-- **Translation Management** - Pull content from ContentStorage CDN
+- **Translation Management** - Pull content from Contentstorage CDN
 - **TypeScript Generation** - Automatic type generation from your content
 - **Translation Statistics** - Analyze translation completeness across languages
 - **Multi-Language Support** - Built-in support for 40+ languages
@@ -48,7 +48,7 @@ export default {
 ### 2. Pull Content & Generate Types
 
 ```bash
-# Pull content from ContentStorage CDN
+# Pull content from Contentstorage CDN
 npx contentstorage pull
 
 # Generate TypeScript type definitions
@@ -69,7 +69,7 @@ npm install @contentstorage/plugin-react-intl
 npx contentstorage-react-intl export
 ```
 
-**With ContentStorage SDK (for advanced features like variations and images):**
+**With Contentstorage SDK (for advanced features like variations and images):**
 ```bash
 npm install @contentstorage/sdk
 ```
@@ -78,7 +78,7 @@ npm install @contentstorage/sdk
 
 ### `contentstorage pull`
 
-Pull content from ContentStorage CDN
+Pull content from Contentstorage CDN
 
 ```bash
 npx contentstorage pull [options]
@@ -193,13 +193,13 @@ EN, FR, DE, ES, IT, PT, NL, PL, RU, TR, SV, NO, DA, FI, CS, SK, HU, RO, BG, HR, 
 
 ### Option 1: Use with i18n Libraries (Recommended for most projects)
 
-For standard i18n needs, use ContentStorage CLI with popular i18n libraries:
+For standard i18n needs, use Contentstorage CLI with popular i18n libraries:
 
 - **[@contentstorage/plugin-i18next](https://www.npmjs.com/package/@contentstorage/plugin-i18next)** - i18next integration
 - **[@contentstorage/plugin-react-intl](https://www.npmjs.com/package/@contentstorage/plugin-react-intl)** - react-intl (FormatJS) integration
 - **[@contentstorage/plugin-vue-i18n](https://www.npmjs.com/package/@contentstorage/plugin-vue-i18n)** - Vue i18n integration
 
-### Option 2: Use with ContentStorage SDK (Advanced features)
+### Option 2: Use with Contentstorage SDK (Advanced features)
 
 If you need advanced features like variations (A/B testing) and image management:
 
@@ -306,7 +306,7 @@ npm run content:sync    # Pull and generate in one command
 
 ## SDK Extract
 
-The `/sdk-extract` folder contains the ContentStorage SDK code ready to be moved to a separate repository. This SDK provides runtime features like:
+The `/sdk-extract` folder contains the Contentstorage SDK code ready to be moved to a separate repository. This SDK provides runtime features like:
 - getText/getImage/getVariation functions
 - Content variations (A/B testing)
 - Image management

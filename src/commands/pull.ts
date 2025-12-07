@@ -7,6 +7,7 @@ import chalk from 'chalk';
 import { loadConfig } from '../core/config-loader.js';
 import { CONTENTSTORAGE_CONFIG } from '../utils/constants.js';
 import { AppConfig } from '../types.js';
+import { flattenJson } from '../utils/flatten-json.js';
 
 export async function pullContent() {
   console.log(chalk.blue('Starting content pull...'));
@@ -20,6 +21,8 @@ export async function pullContent() {
       const value = args[i + 1];
       if (key === 'pending-changes') {
         cliConfig.pendingChanges = true;
+      } else if (key === 'flatten') {
+        cliConfig.flatten = true;
       } else if (value && !value.startsWith('--')) {
         if (key === 'lang') {
           cliConfig.languageCodes = [value.toUpperCase()];
@@ -154,7 +157,8 @@ export async function pullContent() {
           )
         );
 
-        await fs.writeFile(outputPath, JSON.stringify(jsonData, null, 2));
+        const outputData = config.flatten ? flattenJson(jsonData) : jsonData;
+        await fs.writeFile(outputPath, JSON.stringify(outputData, null, 2));
         console.log(chalk.green(`Successfully saved ${outputPath}`));
       } catch (error: any) {
         // Catch errors related to fetching or saving a single language file

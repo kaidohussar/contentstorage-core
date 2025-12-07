@@ -4,7 +4,7 @@
   "homepage": "https://contentstorage.app",
   "version": "2.1.1",
   "type": "module",
-  "description": "ContentStorage CLI for managing translations and generating TypeScript types",
+  "description": "Contentstorage CLI for managing translations and generating TypeScript types",
   "license": "MIT",
   "bin": {
     "contentstorage": "dist/commands/cli.js"

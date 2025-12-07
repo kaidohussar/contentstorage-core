@@ -15,6 +15,7 @@ const COMMANDS = {
       '  --content-dir <dir>    Directory to save content files',
       '  --lang <code>          Language code (e.g., EN, FR)',
       '  --pending-changes      Fetch pending/draft content',
+      '  --flatten              Output flattened key-value pairs',
     ],
   },
   'generate-types': {
@@ -41,7 +42,7 @@ const COMMANDS = {
 };
 
 function showHelp() {
-  console.log(chalk.bold('\nContentStorage CLI'));
+  console.log(chalk.bold('\nContentstorage CLI'));
   console.log(chalk.dim('Manage content and generate TypeScript types\n'));
 
   console.log(chalk.bold('Usage:'));
