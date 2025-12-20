@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import { pullContent } from './pull.js';
 import { generateTypes } from './generate-types.js';
 import { showStats } from './stats.js';
+import { captureScreenshot } from './screenshot.js';
 
 const COMMANDS = {
   pull: {
@@ -37,6 +38,16 @@ const COMMANDS = {
       '  --content-key <key>    Content key for your project',
       '  --content-dir <dir>    Directory with content files',
       '  --pending-changes      Analyze pending/draft content',
+    ],
+  },
+  screenshot: {
+    name: 'screenshot',
+    description: 'Capture a screenshot',
+    usage: 'contentstorage screenshot --url <url> [options]',
+    options: [
+      '  --url <url>            URL to screenshot (required)',
+      '  --content-key <key>    Content key for backend auth',
+      '  --viewport <WxH>       Viewport size (default: 1920x1080)',
     ],
   },
 };
@@ -119,6 +130,10 @@ async function main() {
 
     case 'stats':
       await showStats();
+      break;
+
+    case 'screenshot':
+      await captureScreenshot();
       break;
 
     default:

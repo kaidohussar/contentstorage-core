@@ -23,8 +23,9 @@
     "release": "npx release-it"
   },
   "dependencies": {
-    "axios": "^1.7.2",
+    "axios": "^1.13.2",
     "chalk": "^4.1.2",
+    "playwright-core": "^1.40.0",
     "pluralize": "^8.0.0"
   },
   "devDependencies": {
