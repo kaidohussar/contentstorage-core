@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import { pullContent } from './pull.js';
 import { generateTypes } from './generate-types.js';
 import { showStats } from './stats.js';
+import { captureScreenshot } from './screenshot.js';
 
 const COMMANDS = {
   pull: {
@@ -37,6 +38,15 @@ const COMMANDS = {
       '  --content-key <key>    Content key for your project',
       '  --content-dir <dir>    Directory with content files',
       '  --pending-changes      Analyze pending/draft content',
+    ],
+  },
+  screenshot: {
+    name: 'screenshot',
+    description: 'Open browser in live-editor mode for screenshots',
+    usage: 'contentstorage screenshot --url <url> [options]',
+    options: [
+      '  --url <url>            Dev server URL (e.g., http://localhost:3000)',
+      '  --content-key <key>    Content key for your project',
     ],
   },
 };
@@ -92,7 +102,6 @@ async function main() {
     showHelp();
     process.exit(0);
   }
-
   const command = args[0];
 
   // Global --help flag
@@ -119,6 +128,10 @@ async function main() {
 
     case 'stats':
       await showStats();
+      break;
+
+    case 'screenshot':
+      await captureScreenshot();
       break;
 
     default:
