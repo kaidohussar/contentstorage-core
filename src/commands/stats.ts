@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { loadConfig } from '../core/config-loader.js';
+import { createApiClient, StatsResponse } from '../core/api-client.js';
 import { AppConfig, LanguageCode } from '../types.js';
 import { flattenJson } from '../utils/flatten-json.js';
 import { CONTENTSTORAGE_CONFIG } from '../utils/constants.js';
@@ -258,6 +259,100 @@ function displayStats(result: StatsResult): void {
 }
 
 /**
+ * Display statistics from API response
+ */
+function displayApiStats(response: StatsResponse): void {
+  const { stats } = response;
+
+  console.log(chalk.bold('\n📊 Translation Statistics (from API)'));
+  console.log(chalk.dim('═'.repeat(70)));
+
+  console.log(
+    chalk.cyan(`\nTotal unique content items: ${chalk.bold(stats.totalKeys)}`)
+  );
+
+  // Language statistics table header
+  console.log(chalk.bold('\n📋 Language Statistics:'));
+  console.log(chalk.dim('─'.repeat(70)));
+
+  // Table header
+  const headerFormat = (str: string, width: number) => str.padEnd(width, ' ');
+  console.log(
+    chalk.bold(
+      headerFormat('Language', 12) +
+        headerFormat('Completed', 12) +
+        headerFormat('Total', 10) +
+        'Complete'
+    )
+  );
+  console.log(chalk.dim('─'.repeat(70)));
+
+  // Calculate overall completion
+  let totalCompleted = 0;
+  let totalPossible = 0;
+
+  // Language rows
+  for (const lang of stats.languages) {
+    const percentageColor =
+      lang.percentage === 100
+        ? chalk.green
+        : lang.percentage >= 80
+          ? chalk.yellow
+          : chalk.red;
+
+    const percentage = percentageColor(lang.percentage + '%');
+
+    console.log(
+      chalk.white(headerFormat(lang.code, 12)) +
+        chalk.white(headerFormat(lang.completed.toString(), 12)) +
+        chalk.white(headerFormat(stats.totalKeys.toString(), 10)) +
+        percentage
+    );
+
+    totalCompleted += lang.completed;
+    totalPossible += stats.totalKeys;
+  }
+
+  console.log(chalk.dim('─'.repeat(70)));
+
+  // Pending changes info
+  if (stats.pendingChanges.total > 0) {
+    console.log(chalk.bold('\n📝 Pending Changes:'));
+    console.log(chalk.dim('─'.repeat(70)));
+    console.log(chalk.cyan(`  Total: ${stats.pendingChanges.total}`));
+    if (stats.pendingChanges.added > 0) {
+      console.log(chalk.green(`  Added: ${stats.pendingChanges.added}`));
+    }
+    if (stats.pendingChanges.edited > 0) {
+      console.log(chalk.yellow(`  Edited: ${stats.pendingChanges.edited}`));
+    }
+    if (stats.pendingChanges.removed > 0) {
+      console.log(chalk.red(`  Removed: ${stats.pendingChanges.removed}`));
+    }
+  }
+
+  // Overall completion
+  console.log(chalk.bold('\n📈 Overall Summary:'));
+  console.log(chalk.dim('─'.repeat(70)));
+
+  const overallCompletion =
+    totalPossible > 0 ? (totalCompleted / totalPossible) * 100 : 100;
+  const overallColor =
+    overallCompletion === 100
+      ? chalk.green
+      : overallCompletion >= 80
+        ? chalk.yellow
+        : chalk.red;
+
+  console.log(
+    overallColor(
+      `Overall Completion: ${chalk.bold(overallCompletion.toFixed(1) + '%')}`
+    )
+  );
+  console.log('');
+}
+
+/**
  * Main stats command function
  */
 export async function showStats(): Promise<void> {
@@ -283,6 +378,10 @@ export async function showStats(): Promise<void> {
               cliConfig.contentKey = value;
             } else if (key === 'content-dir') {
               cliConfig.contentDir = value;
+            } else if (key === 'api-key') {
+              cliConfig.apiKey = value;
+            } else if (key === 'project-id') {
+              cliConfig.projectId = value;
             }
             i++; // Skip the value in next iteration
           }
@@ -305,16 +404,41 @@ export async function showStats(): Promise<void> {
     // Merge configurations (CLI args override file config)
     const config = { ...fileConfig, ...cliConfig } as Partial<AppConfig>;
 
-    // Validate required fields
-    if (!config.contentKey) {
+    // Check if using new API key authentication
+    const useApiClient = !!(config.apiKey && config.projectId);
+
+    // Validate required fields based on auth method
+    if (!useApiClient && !config.contentKey) {
       console.error(
         chalk.red(
-          '\n❌ Error: Content key is required. Provide it via config file or --content-key argument.'
+          '\n❌ Error: Either "contentKey" or "apiKey" + "projectId" is required.\n' +
+            '   Use --content-key for read-only access, or\n' +
+            '   Use --api-key and --project-id for full API access.'
         )
       );
       process.exit(1);
     }
 
+    // If using API client, fetch stats directly from API
+    if (useApiClient) {
+      const apiClient = createApiClient({
+        apiKey: config.apiKey,
+        projectId: config.projectId,
+      });
+
+      if (!apiClient) {
+        console.error(chalk.red('Failed to create API client'));
+        process.exit(1);
+      }
+
+      console.log(chalk.blue('Fetching statistics from API...\n'));
+
+      const apiStats = await apiClient.getStats();
+      displayApiStats(apiStats);
+      return;
+    }
+
+    // contentKey path: local file analysis or fetch from CDN/API
     if (!config.languageCodes || config.languageCodes.length === 0) {
       console.error(
         chalk.red(

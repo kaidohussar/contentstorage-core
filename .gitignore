@@ -2,3 +2,9 @@ dist
 
 .npmrc
 .env
+
+node_modules
+/node_modules/
+
+.claude/
+.idea/

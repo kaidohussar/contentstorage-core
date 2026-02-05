@@ -2,6 +2,7 @@
 
 import chalk from 'chalk';
 import { pullContent } from './pull.js';
+import { pushContent } from './push.js';
 import { generateTypes } from './generate-types.js';
 import { showStats } from './stats.js';
 import { captureScreenshot } from './screenshot.js';
@@ -12,11 +13,25 @@ const COMMANDS = {
     description: 'Pull content from Contentstorage CDN',
     usage: 'contentstorage pull [options]',
     options: [
-      '  --content-key <key>    Content key for your project',
+      '  --content-key <key>    Content key (read-only access)',
+      '  --api-key <key>        API key (read + write access)',
+      '  --project-id <id>      Project ID (required with --api-key)',
       '  --content-dir <dir>    Directory to save content files',
       '  --lang <code>          Language code (e.g., EN, FR)',
       '  --pending-changes      Fetch pending/draft content',
       '  --flatten              Output flattened key-value pairs',
+    ],
+  },
+  push: {
+    name: 'push',
+    description: 'Push local content changes to Contentstorage',
+    usage: 'contentstorage push [options]',
+    options: [
+      '  --api-key <key>        API key for authentication (required)',
+      '  --project-id <id>      Project ID (required)',
+      '  --content-dir <dir>    Directory with content files',
+      '  --lang <code>          Language code to push (e.g., EN)',
+      '  --dry-run              Preview changes without applying',
     ],
   },
   'generate-types': {
@@ -35,7 +50,9 @@ const COMMANDS = {
     description: 'Show translation completeness statistics',
     usage: 'contentstorage stats [options]',
     options: [
-      '  --content-key <key>    Content key for your project',
+      '  --content-key <key>    Content key (read-only access)',
+      '  --api-key <key>        API key (read + write access)',
+      '  --project-id <id>      Project ID (required with --api-key)',
       '  --content-dir <dir>    Directory with content files',
       '  --pending-changes      Analyze pending/draft content',
     ],
@@ -120,6 +137,10 @@ async function main() {
   switch (command) {
     case 'pull':
       await pullContent();
+      break;
+
+    case 'push':
+      await pushContent();
       break;
 
     case 'generate-types':

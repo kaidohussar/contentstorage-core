@@ -43,6 +43,9 @@ export async function loadConfig(): Promise<AppConfig> {
     contentKey: mergedConfig.contentKey || '',
     contentDir: path.resolve(process.cwd(), mergedConfig.contentDir!),
     typesOutputFile: path.resolve(process.cwd(), mergedConfig.typesOutputFile!),
+    // New API key authentication fields
+    apiKey: mergedConfig.apiKey,
+    projectId: mergedConfig.projectId,
   };
 
   return finalConfig;

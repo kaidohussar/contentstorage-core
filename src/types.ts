@@ -5,6 +5,9 @@ export type AppConfig = {
   typesOutputFile: string;
   pendingChanges?: boolean;
   flatten?: boolean;
+  // New API key authentication (preferred over contentKey)
+  apiKey?: string;
+  projectId?: string;
 };
 
 export type LanguageCode =

@@ -11,11 +11,12 @@ Contentstorage Core is a powerful CLI tool for managing translations and content
 
 ## Features
 
-- **Translation Management** - Pull content from Contentstorage CDN
+- **Translation Management** - Pull and push content to/from Contentstorage
 - **TypeScript Generation** - Automatic type generation from your content
 - **Translation Statistics** - Analyze translation completeness across languages
 - **Multi-Language Support** - Built-in support for 40+ languages
 - **CLI Tools** - Professional command-line interface
+- **API Key Authentication** - Secure project-level API keys for CI/CD integration
 - **Plugin Ecosystem** - Integrate with i18next, react-intl, vue-i18n, and more
 
 ## Installation

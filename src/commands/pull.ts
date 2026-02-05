@@ -5,6 +5,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import chalk from 'chalk';
 import { loadConfig } from '../core/config-loader.js';
+import { createApiClient } from '../core/api-client.js';
 import { CONTENTSTORAGE_CONFIG } from '../utils/constants.js';
 import { AppConfig } from '../types.js';
 import { flattenJson } from '../utils/flatten-json.js';
@@ -30,6 +31,10 @@ export async function pullContent() {
           cliConfig.contentKey = value;
         } else if (key === 'content-dir') {
           cliConfig.contentDir = value;
+        } else if (key === 'api-key') {
+          cliConfig.apiKey = value;
+        } else if (key === 'project-id') {
+          cliConfig.projectId = value;
         }
         // Skip the value in the next iteration
         i++;
@@ -49,11 +54,16 @@ export async function pullContent() {
   }
   const config = { ...fileConfig, ...cliConfig } as Partial<AppConfig>;
 
-  // Validate required fields
-  if (!config.contentKey) {
+  // Check if using API key authentication or contentKey (read-only)
+  const useApiClient = !!(config.apiKey && config.projectId);
+
+  // Validate required fields based on auth method
+  if (!useApiClient && !config.contentKey) {
     console.error(
       chalk.red(
-        'Error: Configuration is missing the required "contentKey" property.'
+        'Error: Either "contentKey" or "apiKey" + "projectId" is required.\n' +
+          '  Use --content-key for read-only access, or\n' +
+          '  Use --api-key and --project-id for full API access (read + write).'
       )
     );
     process.exit(1);
@@ -68,10 +78,33 @@ export async function pullContent() {
     process.exit(1);
   }
 
-  console.log(chalk.blue(`Content key: ${config.contentKey}`));
+  if (useApiClient) {
+    console.log(chalk.blue(`Using API key authentication`));
+    console.log(chalk.blue(`Project ID: ${config.projectId}`));
+  } else {
+    console.log(chalk.blue(`Content key: ${config.contentKey}`));
+  }
   console.log(chalk.blue(`Saving content to: ${config.contentDir}`));
 
   try {
+    // Create API client if using new authentication
+    const apiClient = useApiClient
+      ? createApiClient({
+          apiKey: config.apiKey,
+          projectId: config.projectId,
+        })
+      : null;
+
+    // If using API client and no languages specified, fetch from project info
+    if (apiClient && (!config.languageCodes || config.languageCodes.length === 0)) {
+      console.log(chalk.dim('Fetching available languages from project...'));
+      const projectInfo = await apiClient.getProject();
+      config.languageCodes = projectInfo.project.languages as any[];
+      console.log(
+        chalk.blue(`Found languages: ${config.languageCodes.join(', ')}`)
+      );
+    }
+
     // Validate languageCodes array
     if (!Array.isArray(config.languageCodes)) {
       console.log(
@@ -92,6 +125,53 @@ export async function pullContent() {
     // Ensure the output directory exists (create it once before the loop)
     await fs.mkdir(config.contentDir, { recursive: true });
 
+    // Use API client if available
+    if (apiClient) {
+      // Fetch all content at once using new API
+      const format = config.flatten ? 'flat' : 'nested';
+      const draft = config.pendingChanges !== false; // Default to draft
+
+      console.log(
+        chalk.dim(`\nFetching ${draft ? 'draft' : 'published'} content...`)
+      );
+
+      const response = await apiClient.getContent({
+        format,
+        draft,
+      });
+
+      // Save each language to a file
+      for (const languageCode of config.languageCodes) {
+        const upperLang = languageCode.toUpperCase();
+        const jsonData = response.data[upperLang];
+
+        if (!jsonData) {
+          console.log(
+            chalk.yellow(`\nNo content found for language: ${upperLang}`)
+          );
+          continue;
+        }
+
+        const filename = `${upperLang}.json`;
+        const outputPath = path.join(config.contentDir, filename);
+
+        console.log(chalk.blue(`\nProcessing language: ${upperLang}`));
+
+        await fs.writeFile(outputPath, JSON.stringify(jsonData, null, 2));
+        console.log(chalk.green(`Successfully saved ${outputPath}`));
+      }
+
+      if (response.metadata.hasPendingChanges) {
+        console.log(
+          chalk.cyan('\n📝 Note: This project has pending changes awaiting publish.')
+        );
+      }
+
+      console.log(chalk.green('\nAll content successfully pulled and saved.'));
+      return;
+    }
+
+    // contentKey path: read-only access via CDN/API
     // Process each language code
     for (const languageCode of config.languageCodes) {
       let fileUrl: string;
