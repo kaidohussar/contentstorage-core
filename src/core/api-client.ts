@@ -26,10 +26,24 @@ export interface PushResult {
   uploadId?: string;
 }
 
+export interface TranslateSessionData {
+  keys: Array<{ key: string; value: string; status: 'new' | 'modified' }>;
+  metadata?: {
+    gitBranch?: string;
+    pushedAt?: string;
+  };
+}
+
+export interface TranslateSessionResult {
+  id: string;
+  url: string;
+}
+
 export interface PushResponse {
   success: boolean;
   result: PushResult;
   dryRun?: boolean;
+  session?: TranslateSessionResult;
 }
 
 export interface ProjectResponse {
@@ -139,17 +153,23 @@ export class ApiClient {
   async pushContent(
     languageCode: string,
     content: Record<string, any>,
-    options: { dryRun?: boolean } = {}
+    options: { dryRun?: boolean; session?: TranslateSessionData } = {}
   ): Promise<PushResponse> {
     try {
-      const response = await this.client.post<PushResponse>('/content/push', {
+      const body: Record<string, any> = {
         projectId: this.projectId,
         languageCode,
         content,
         options: {
           dryRun: options.dryRun || false,
         },
-      });
+      };
+
+      if (options.session) {
+        body.session = options.session;
+      }
+
+      const response = await this.client.post<PushResponse>('/content/push', body);
       return response.data;
     } catch (error) {
       this.handleError(error as AxiosError<ApiError>);

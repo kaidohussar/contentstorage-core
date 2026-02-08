@@ -6,6 +6,7 @@ import { pushContent } from './push.js';
 import { generateTypes } from './generate-types.js';
 import { showStats } from './stats.js';
 import { captureScreenshot } from './screenshot.js';
+import { translateContent } from './translate.js';
 
 const COMMANDS = {
   pull: {
@@ -64,6 +65,19 @@ const COMMANDS = {
     options: [
       '  --url <url>            Dev server URL (e.g., http://localhost:3000)',
       '  --content-key <key>    Content key for your project',
+    ],
+  },
+  translate: {
+    name: 'translate',
+    description: 'Push new/changed keys and create a translate session',
+    usage: 'contentstorage translate [options]',
+    options: [
+      '  --api-key <key>        API key for authentication',
+      '  --project-id <id>      Project ID',
+      '  --content-dir <dir>    Directory with content files',
+      '  --lang <code>          Source language code (e.g., EN)',
+      '  --dry-run              Preview changes without pushing',
+      '  -y                     Skip confirmation prompt',
     ],
   },
 };
@@ -153,6 +167,10 @@ async function main() {
 
     case 'screenshot':
       await captureScreenshot();
+      break;
+
+    case 'translate':
+      await translateContent();
       break;
 
     default:

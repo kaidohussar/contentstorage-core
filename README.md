@@ -39,12 +39,20 @@ Create `contentstorage.config.js` in your project root:
 
 ```javascript
 export default {
-  contentKey: 'your-content-key',
+  // Option A: Content Key (read-only access)
+  contentKey: 'your-team-id/your-project-id',
+
+  // Option B: API Key (read + write access) - recommended for CI/CD
+  // apiKey: 'csk_xxxxxxxx_xxxxxxxxxxxxxxxxxxxxxxxx',
+  // projectId: 'your-project-uuid',
+
   languageCodes: ['EN', 'FR', 'DE'],
   contentDir: 'src/content/json',
   typesOutputFile: 'src/content/content-types.d.ts'
 };
 ```
+
+> **Note:** Use `contentKey` for read-only access (pull, stats). Use `apiKey` + `projectId` for full access including push operations. API keys can be created in Project Settings → API Keys.
 
 ### 2. Pull Content & Generate Types
 
@@ -86,17 +94,58 @@ npx contentstorage pull [options]
 ```
 
 **Options:**
-- `--content-key <key>` - Content key for your project
+- `--content-key <key>` - Content key (read-only access)
+- `--api-key <key>` - API key (read + write access)
+- `--project-id <id>` - Project ID (required with --api-key)
 - `--content-dir <dir>` - Directory to save content files
 - `--lang <code>` - Language code (e.g., EN, FR)
 - `--pending-changes` - Fetch pending/draft content
+- `--flatten` - Output flattened key-value pairs
 
 **Examples:**
 ```bash
-npx contentstorage pull --content-key abc123
+# Using content key (read-only)
+npx contentstorage pull --content-key teamId/projectId
+
+# Using API key (recommended for CI/CD)
+npx contentstorage pull --api-key csk_xxx --project-id uuid
+
+# Pull specific language with draft content
 npx contentstorage pull --lang EN --pending-changes
-npx contentstorage pull --content-dir src/content
 ```
+
+### `contentstorage push`
+
+Push local content changes to Contentstorage (requires API key)
+
+```bash
+npx contentstorage push [options]
+```
+
+**Options:**
+- `--api-key <key>` - API key (required)
+- `--project-id <id>` - Project ID (required)
+- `--content-dir <dir>` - Directory with content files
+- `--lang <code>` - Language code to push (e.g., EN)
+- `--dry-run` - Preview changes without applying
+
+**Examples:**
+```bash
+# Push all configured languages
+npx contentstorage push --api-key csk_xxx --project-id uuid
+
+# Push specific language
+npx contentstorage push --api-key csk_xxx --project-id uuid --lang EN
+
+# Preview changes without applying
+npx contentstorage push --api-key csk_xxx --project-id uuid --dry-run
+```
+
+**Behavior:**
+- Adds new keys that don't exist in Contentstorage
+- Updates existing keys with different values
+- Never removes keys (safe by design)
+- If change tracking is enabled, creates pending changes for review
 
 ### `contentstorage generate-types`
 
@@ -127,15 +176,20 @@ npx contentstorage stats [options]
 ```
 
 **Options:**
-- `--content-key <key>` - Content key for your project
+- `--content-key <key>` - Content key (read-only access)
+- `--api-key <key>` - API key (fetches stats directly from API)
+- `--project-id <id>` - Project ID (required with --api-key)
 - `--content-dir <dir>` - Directory with content files
 - `--pending-changes` - Analyze pending/draft content
 
 **Examples:**
 ```bash
+# Using local files + content key
 npx contentstorage stats
-npx contentstorage stats --content-key abc123
-npx contentstorage stats --pending-changes
+npx contentstorage stats --content-key teamId/projectId
+
+# Using API key (fetches directly from server)
+npx contentstorage stats --api-key csk_xxx --project-id uuid
 ```
 
 **What it shows:**
@@ -168,8 +222,14 @@ npx contentstorage stats --help
 
 ```javascript
 export default {
-  // Required: Unique content identifier
-  contentKey: 'your-content-key',
+  // Authentication Option A: Content Key (read-only)
+  // Format: teamId/projectId
+  contentKey: 'your-team-id/your-project-id',
+
+  // Authentication Option B: API Key (read + write)
+  // Create in Project Settings → API Keys
+  // apiKey: 'csk_xxxxxxxx_xxxxxxxxxxxxxxxxxxxxxxxx',
+  // projectId: 'your-project-uuid',
 
   // Required: Array of language codes
   languageCodes: ['EN', 'FR', 'DE', 'ES'],
@@ -184,6 +244,17 @@ export default {
   pendingChanges: false
 };
 ```
+
+### Authentication Methods
+
+| Method | Access Level | Use Case |
+|--------|-------------|----------|
+| `contentKey` | Read-only | Pull content, view stats |
+| `apiKey` + `projectId` | Read + Write | Pull, push, CI/CD pipelines |
+
+**Getting your credentials:**
+- **Content Key**: Found in Project Settings → General (format: `teamId/projectId`)
+- **API Key**: Create in Project Settings → API Keys
 
 ### Supported Languages
 
