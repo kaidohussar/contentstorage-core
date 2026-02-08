@@ -382,6 +382,8 @@ export async function showStats(): Promise<void> {
               cliConfig.apiKey = value;
             } else if (key === 'project-id') {
               cliConfig.projectId = value;
+            } else if (key === 'api-url') {
+              cliConfig.apiUrl = value;
             }
             i++; // Skip the value in next iteration
           }
@@ -424,6 +426,7 @@ export async function showStats(): Promise<void> {
       const apiClient = createApiClient({
         apiKey: config.apiKey,
         projectId: config.projectId,
+        apiUrl: config.apiUrl,
       });
 
       if (!apiClient) {

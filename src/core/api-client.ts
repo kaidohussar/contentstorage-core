@@ -86,10 +86,11 @@ export class ApiClient {
   private client: AxiosInstance;
   private projectId: string;
 
-  constructor(apiKey: string, projectId: string) {
+  constructor(apiKey: string, projectId: string, apiUrl?: string) {
     this.projectId = projectId;
+    const baseApiUrl = apiUrl || CONTENTSTORAGE_CONFIG.API_URL;
     this.client = axios.create({
-      baseURL: `${CONTENTSTORAGE_CONFIG.API_URL}/api/v1/cli`,
+      baseURL: `${baseApiUrl}/api/v1/cli`,
       headers: {
         Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
@@ -208,9 +209,10 @@ export class ApiClient {
 export function createApiClient(config: {
   apiKey?: string;
   projectId?: string;
+  apiUrl?: string;
 }): ApiClient | null {
   if (!config.apiKey || !config.projectId) {
     return null;
   }
-  return new ApiClient(config.apiKey, config.projectId);
+  return new ApiClient(config.apiKey, config.projectId, config.apiUrl);
 }

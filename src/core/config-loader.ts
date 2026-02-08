@@ -46,6 +46,7 @@ export async function loadConfig(): Promise<AppConfig> {
     // New API key authentication fields
     apiKey: mergedConfig.apiKey,
     projectId: mergedConfig.projectId,
+    apiUrl: process.env.CONTENTSTORAGE_API_URL || mergedConfig.apiUrl,
   };
 
   return finalConfig;

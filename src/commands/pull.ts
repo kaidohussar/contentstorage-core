@@ -35,6 +35,8 @@ export async function pullContent() {
           cliConfig.apiKey = value;
         } else if (key === 'project-id') {
           cliConfig.projectId = value;
+        } else if (key === 'api-url') {
+          cliConfig.apiUrl = value;
         }
         // Skip the value in the next iteration
         i++;
@@ -92,6 +94,7 @@ export async function pullContent() {
       ? createApiClient({
           apiKey: config.apiKey,
           projectId: config.projectId,
+          apiUrl: config.apiUrl,
         })
       : null;
 

@@ -83,6 +83,8 @@ export async function translateContent(): Promise<void> {
           cliConfig.projectId = value;
         } else if (key === 'content-dir') {
           cliConfig.contentDir = value;
+        } else if (key === 'api-url') {
+          cliConfig.apiUrl = value;
         }
         i++;
       }
@@ -154,6 +156,7 @@ export async function translateContent(): Promise<void> {
   const apiClient = createApiClient({
     apiKey: config.apiKey,
     projectId: config.projectId,
+    apiUrl: config.apiUrl,
   });
 
   if (!apiClient) {
@@ -296,12 +299,15 @@ export async function translateContent(): Promise<void> {
         (response.session ? chalk.dim(` [session: ${response.session.id}]`) : '')
     );
 
-    // Step 7: Open browser
+    // Step 7: Show session URL and ask before opening browser
     if (response.session) {
-      console.log(chalk.bold('\n→ Create task and add visual context:'));
+      console.log(chalk.bold('\n→ Translate session created:'));
       console.log(chalk.cyan(`  ${response.session.url}`));
 
-      openInBrowser(response.session.url);
+      const openAnswer = await prompt('Open in browser? (Y/n) ');
+      if (openAnswer.toLowerCase() !== 'n') {
+        openInBrowser(response.session.url);
+      }
     }
   } catch (error: any) {
     console.error(chalk.red(`\n❌ Failed to push keys: ${error.message}`));

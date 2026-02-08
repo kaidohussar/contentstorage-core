@@ -31,6 +31,8 @@ export async function pushContent() {
           cliConfig.projectId = value;
         } else if (key === 'content-dir') {
           cliConfig.contentDir = value;
+        } else if (key === 'api-url') {
+          cliConfig.apiUrl = value;
         }
         i++; // Skip the value in next iteration
       }
@@ -99,6 +101,7 @@ export async function pushContent() {
   const apiClient = createApiClient({
     apiKey: config.apiKey,
     projectId: config.projectId,
+    apiUrl: config.apiUrl,
   });
 
   if (!apiClient) {

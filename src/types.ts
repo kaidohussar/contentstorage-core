@@ -8,6 +8,7 @@ export type AppConfig = {
   // New API key authentication (preferred over contentKey)
   apiKey?: string;
   projectId?: string;
+  apiUrl?: string;
 };
 
 export type LanguageCode =

@@ -17,6 +17,7 @@ const COMMANDS = {
       '  --content-key <key>    Content key (read-only access)',
       '  --api-key <key>        API key (read + write access)',
       '  --project-id <id>      Project ID (required with --api-key)',
+      '  --api-url <url>        API base URL (default: production)',
       '  --content-dir <dir>    Directory to save content files',
       '  --lang <code>          Language code (e.g., EN, FR)',
       '  --pending-changes      Fetch pending/draft content',
@@ -30,6 +31,7 @@ const COMMANDS = {
     options: [
       '  --api-key <key>        API key for authentication (required)',
       '  --project-id <id>      Project ID (required)',
+      '  --api-url <url>        API base URL (default: production)',
       '  --content-dir <dir>    Directory with content files',
       '  --lang <code>          Language code to push (e.g., EN)',
       '  --dry-run              Preview changes without applying',
@@ -54,6 +56,7 @@ const COMMANDS = {
       '  --content-key <key>    Content key (read-only access)',
       '  --api-key <key>        API key (read + write access)',
       '  --project-id <id>      Project ID (required with --api-key)',
+      '  --api-url <url>        API base URL (default: production)',
       '  --content-dir <dir>    Directory with content files',
       '  --pending-changes      Analyze pending/draft content',
     ],
@@ -74,6 +77,7 @@ const COMMANDS = {
     options: [
       '  --api-key <key>        API key for authentication',
       '  --project-id <id>      Project ID',
+      '  --api-url <url>        API base URL (default: production)',
       '  --content-dir <dir>    Directory with content files',
       '  --lang <code>          Source language code (e.g., EN)',
       '  --dry-run              Preview changes without pushing',
